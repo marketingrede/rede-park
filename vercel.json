@@ -2,23 +2,5 @@
   "version": 2,
   "buildCommand": "node ace build",
   "outputDirectory": "build/public",
-  "rewrites": [
-    {
-      "source": "/assets/(.*)",
-      "destination": "/assets/$1"
-    },
-    {
-      "source": "/logo-rede-trilha.svg",
-      "destination": "/logo-rede-trilha.svg"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/api/index.js"
-    }
-  ],
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "build/**"
-    }
-  }
+  "installCommand": "npm install"
 }
