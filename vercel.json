@@ -4,6 +4,6 @@
   "outputDirectory": "build/public",
   "installCommand": "npm ci --include=dev",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/server.js" }
+    { "source": "/((?!assets/).*)", "destination": "/api/index.js" }
   ]
 }
