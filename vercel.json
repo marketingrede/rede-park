@@ -2,7 +2,7 @@
   "version": 2,
   "buildCommand": "node ace build",
   "outputDirectory": "build/public",
-  "installCommand": "npm ci",
+  "installCommand": "npm ci --include=dev",
   "routes": [
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/server.js" }
