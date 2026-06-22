@@ -11,19 +11,23 @@
 
 import { Env } from '@adonisjs/core/env'
 
+if (!process.env.APP_URL && process.env.VERCEL_URL) {
+  process.env.APP_URL = `https://${process.env.VERCEL_URL}`
+}
+
 export default await Env.create(new URL('../', import.meta.url), {
   // Node
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
-  PORT: Env.schema.number(),
-  HOST: Env.schema.string({ format: 'host' }),
-  LOG_LEVEL: Env.schema.string(),
+  PORT: Env.schema.number.optional(),
+  HOST: Env.schema.string.optional({ format: 'host' }),
+  LOG_LEVEL: Env.schema.string.optional(),
 
   // App
   APP_KEY: Env.schema.secret(),
   APP_URL: Env.schema.string({ format: 'url', tld: false }),
 
   // Session
-  SESSION_DRIVER: Env.schema.enum(['cookie', 'memory', 'database'] as const),
+  SESSION_DRIVER: Env.schema.enum.optional(['cookie', 'memory', 'database'] as const),
 
   // Senior
   SENIOR_IMPORT_DIR: Env.schema.string.optional(),

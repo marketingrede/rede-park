@@ -25,6 +25,27 @@ node ace migration:run
 npm run dev
 ```
 
+## Deploy na Vercel
+
+O deploy usa uma Function em `api/index.js`, que carrega o build do Adonis em `build/bin/vercel.js`.
+
+Variaveis obrigatorias na Vercel:
+
+- `NODE_ENV=production`
+- `APP_KEY`
+- `DB_CONNECTION=libsql`
+- `LIBSQL_URL`
+- `LIBSQL_AUTH_TOKEN`
+
+Variaveis recomendadas:
+
+- `APP_URL=https://seu-dominio`
+- `SESSION_DRIVER=cookie`
+
+Em preview da Vercel, `APP_URL` usa `VERCEL_URL` automaticamente se `APP_URL` nao estiver definida.
+
+O projeto fixa `node` em `24.x`, que e o runtime esperado para esta versao do Adonis.
+
 Importar arquivos exportados do Senior:
 
 ```bash

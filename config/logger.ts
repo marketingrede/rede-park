@@ -23,7 +23,7 @@ const loggerConfig = defineConfig({
       /**
        * Minimum level to output (trace, debug, info, warn, error, fatal).
        */
-      level: env.get('LOG_LEVEL'),
+      level: env.get('LOG_LEVEL', 'info'),
 
       /**
        * Use sync destination in non-production for immediate flush.

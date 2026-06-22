@@ -1,5 +1,22 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "framework": null,
   "buildCommand": "node ace build",
-  "installCommand": "npm ci --include=dev"
+  "installCommand": "npm ci --include=dev",
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "build/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/index"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/api/index"
+    }
+  ]
 }
