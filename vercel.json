@@ -2,5 +2,9 @@
   "version": 2,
   "buildCommand": "node ace build",
   "outputDirectory": "build/public",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/server.ts" }
+  ]
 }

@@ -107,8 +107,7 @@ const dbConfig = defineConfig({
     libsql: {
       client: 'libsql' as any,
       connection: {
-        url: env.get('LIBSQL_URL') ?? '',
-        authToken: env.get('LIBSQL_AUTH_TOKEN') ?? '',
+        filename: `${env.get('LIBSQL_URL') ?? ''}?authToken=${env.get('LIBSQL_AUTH_TOKEN') ?? ''}`,
       } as any,
       useNullAsDefault: true,
       migrations: {
