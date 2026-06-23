@@ -14,7 +14,8 @@
     "test": "node ace test",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "typecheck": "tsc --noEmit && tsc --noEmit --project inertia/tsconfig.json"
+    "typecheck": "tsc --noEmit && tsc --noEmit --project inertia/tsconfig.json",
+    "postinstall": "node scripts/patch-libsql.js"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

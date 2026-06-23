@@ -331,15 +331,11 @@ export default class SeniorImportService {
     let totalRows = 0
 
     try {
-      console.log('[DEBUG importFile] Carregando registros da planilha...');
       const { records, headerRow } = await loadRecords(filePath, sourceType)
       totalRows = records.length
-      console.log(`[DEBUG importFile] Registros carregados: ${totalRows}. Linha do cabeçalho: ${headerRow}`);
       importRecord.detectedHeaderRow = headerRow
 
-      console.log('[DEBUG importFile] Buscando colaboradores existentes no banco...');
       const existingEmployees = await Employee.query()
-      console.log(`[DEBUG importFile] Colaboradores existentes carregados: ${existingEmployees.length}`);
       const employeeMap = new Map<string, Employee>()
       for (const emp of existingEmployees) {
         if (emp.seniorSourceKey) {
@@ -351,7 +347,6 @@ export default class SeniorImportService {
       const toInsert: any[] = []
       const toUpdate: { model: Employee; data: any }[] = []
 
-      console.log('[DEBUG importFile] Processando registros em memória...');
       for (const [index, record] of records.entries()) {
         const sourceLine = headerRow ? headerRow + index + 1 : index + 1
 
@@ -418,27 +413,21 @@ export default class SeniorImportService {
         }
       }
 
-      console.log(`[DEBUG importFile] Processamento em memória concluído. Para Inserir: ${toInsert.length}, Para Atualizar: ${toUpdate.length}`);
-
       // Bulk insert new employees in batches
       if (toInsert.length > 0) {
-        console.log(`[DEBUG importFile] Inserindo ${toInsert.length} novos colaboradores...`);
         const batchSize = 100
         for (let i = 0; i < toInsert.length; i += batchSize) {
           const batch = toInsert.slice(i, i + batchSize)
           await Employee.createMany(batch)
           importedCount += batch.length
         }
-        console.log('[DEBUG importFile] Novos colaboradores inseridos com sucesso.');
       }
 
       // Update existing employees in concurrent batches
       if (toUpdate.length > 0) {
-        console.log(`[DEBUG importFile] Atualizando ${toUpdate.length} colaboradores existentes em lotes concorrentes...`);
         const batchSize = 30
         for (let i = 0; i < toUpdate.length; i += batchSize) {
           const chunk = toUpdate.slice(i, i + batchSize)
-          console.log(`[DEBUG importFile] Enviando lote de atualização ${i} até ${i + chunk.length}...`);
           await Promise.all(
             chunk.map(async (item) => {
               try {
@@ -452,10 +441,8 @@ export default class SeniorImportService {
             })
           )
         }
-        console.log('[DEBUG importFile] Colaboradores existentes atualizados.');
       }
 
-      console.log('[DEBUG importFile] Finalizando registro de importação no banco...');
       importRecord.merge({
         status: errors.length > 0 ? 'completed_with_errors' : 'completed',
         totalRows,
@@ -467,9 +454,8 @@ export default class SeniorImportService {
         finishedAt: DateTime.now(),
       })
       await importRecord.save()
-      console.log('[DEBUG importFile] Importação concluída com sucesso!');
     } catch (error) {
-      console.error('[DEBUG importFile] Erro crítico no importFile:', error);
+      console.error('Erro crítico no importFile:', error)
       importRecord.merge({
         status: 'failed',
         totalRows,
