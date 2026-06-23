@@ -55,6 +55,42 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['store']>>>
     }
   }
+  'public.collaborator_register': {
+    methods: ["GET","HEAD"]
+    pattern: '/cadastro-colaborador'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['showForm']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['showForm']>>>
+    }
+  }
+  'public_collaborators.lookup': {
+    methods: ["POST"]
+    pattern: '/api/public/employees/lookup'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['lookup']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['lookup']>>>
+    }
+  }
+  'public_collaborators.submit': {
+    methods: ["POST"]
+    pattern: '/api/public/employees/submit'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['submit']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/public_collaborators_controller').default['submit']>>>
+    }
+  }
   'home': {
     methods: ["GET","HEAD"]
     pattern: '/'
@@ -341,6 +377,42 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/redepark').userManagementValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/users_controller').default['update']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/users_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.approvals.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/usuarios/aprovacoes'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['index']>>>
+    }
+  }
+  'admin.approvals.approve': {
+    methods: ["POST"]
+    pattern: '/usuarios/aprovacoes/:id/aprovar'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['approve']>>>
+    }
+  }
+  'admin.approvals.reject': {
+    methods: ["POST"]
+    pattern: '/usuarios/aprovacoes/:id/rejeitar'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['reject']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/approvals_controller').default['reject']>>>
     }
   }
 }

@@ -15,4 +15,6 @@ export const controllers = {
   Users: () => import('#controllers/users_controller'),
   Vehicles: () => import('#controllers/vehicles_controller'),
   Visitors: () => import('#controllers/visitors_controller'),
+  PublicCollaborators: () => import('#controllers/public_collaborators_controller'),
+  Approvals: () => import('#controllers/approvals_controller'),
 }

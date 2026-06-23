@@ -31,6 +31,13 @@ router
   })
   .use(middleware.guest())
 
+const PublicCollaboratorsController = () => import('#controllers/public_collaborators_controller')
+const ApprovalsController = () => import('#controllers/approvals_controller')
+
+router.get('cadastro-colaborador', [PublicCollaboratorsController, 'showForm']).as('public.collaborator_register')
+router.post('api/public/employees/lookup', [PublicCollaboratorsController, 'lookup'])
+router.post('api/public/employees/submit', [PublicCollaboratorsController, 'submit'])
+
 router
   .group(() => {
     router.get('/', ({ response }) => response.redirect().toPath('/operacao')).as('home')
@@ -66,6 +73,10 @@ router
         router.get('usuarios', [UsersController, 'index']).as('users.index')
         router.post('usuarios', [UsersController, 'store']).as('users.store')
         router.post('usuarios/:id', [UsersController, 'update']).as('users.update')
+
+        router.get('usuarios/aprovacoes', [ApprovalsController, 'index']).as('admin.approvals.index')
+        router.post('usuarios/aprovacoes/:id/aprovar', [ApprovalsController, 'approve']).as('admin.approvals.approve')
+        router.post('usuarios/aprovacoes/:id/rejeitar', [ApprovalsController, 'reject']).as('admin.approvals.reject')
       })
       .use(middleware.admin())
   })

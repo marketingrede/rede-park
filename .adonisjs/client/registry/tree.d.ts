@@ -11,6 +11,13 @@ export interface ApiDefinition {
     store: typeof routes['session.store']
     destroy: typeof routes['session.destroy']
   }
+  public: {
+    collaboratorRegister: typeof routes['public.collaborator_register']
+  }
+  publicCollaborators: {
+    lookup: typeof routes['public_collaborators.lookup']
+    submit: typeof routes['public_collaborators.submit']
+  }
   home: typeof routes['home']
   operations: {
     index: typeof routes['operations.index']
@@ -51,5 +58,12 @@ export interface ApiDefinition {
     index: typeof routes['users.index']
     store: typeof routes['users.store']
     update: typeof routes['users.update']
+  }
+  admin: {
+    approvals: {
+      index: typeof routes['admin.approvals.index']
+      approve: typeof routes['admin.approvals.approve']
+      reject: typeof routes['admin.approvals.reject']
+    }
   }
 }

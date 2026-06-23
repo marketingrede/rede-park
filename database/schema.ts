@@ -7,6 +7,55 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class ApprovalRequestSchema extends BaseModel {
+  static $columns = ['alternatePhone', 'birthDate', 'companyName', 'cpf', 'createdAt', 'email', 'employeeId', 'fullName', 'id', 'normalizedCpf', 'phone', 'photoPath', 'rejectionReason', 'roleName', 'status', 'updatedAt', 'vehicleColor', 'vehicleManufacturer', 'vehicleModel', 'vehiclePlate', 'vehicleType', 'vehicleYear'] as const
+  $columns = ApprovalRequestSchema.$columns
+  @column()
+  declare alternatePhone: string | null
+  @column.date()
+  declare birthDate: DateTime | null
+  @column()
+  declare companyName: string | null
+  @column()
+  declare cpf: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare email: string | null
+  @column()
+  declare employeeId: number | null
+  @column()
+  declare fullName: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare normalizedCpf: string
+  @column()
+  declare phone: string | null
+  @column()
+  declare photoPath: string | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare roleName: string | null
+  @column()
+  declare status: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vehicleColor: string | null
+  @column()
+  declare vehicleManufacturer: string | null
+  @column()
+  declare vehicleModel: string | null
+  @column()
+  declare vehiclePlate: string | null
+  @column()
+  declare vehicleType: string | null
+  @column()
+  declare vehicleYear: number | null
+}
+
 export class CompanySchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'name', 'normalizedName', 'status', 'updatedAt'] as const
   $columns = CompanySchema.$columns
@@ -50,7 +99,7 @@ export class ContactAttemptSchema extends BaseModel {
 }
 
 export class EmployeeSchema extends BaseModel {
-  static $columns = ['alternatePhone', 'birthDate', 'companyId', 'companyName', 'costCenterCode', 'costCenterDescription', 'createdAt', 'email', 'fullName', 'id', 'normalizedName', 'notes', 'phone', 'photoPath', 'roleName', 'seniorImportId', 'seniorRaw', 'seniorSourceKey', 'status', 'updatedAt'] as const
+  static $columns = ['alternatePhone', 'birthDate', 'companyId', 'companyName', 'costCenterCode', 'costCenterDescription', 'cpf', 'createdAt', 'email', 'fullName', 'id', 'normalizedCpf', 'normalizedName', 'notes', 'phone', 'photoPath', 'roleName', 'seniorImportId', 'seniorRaw', 'seniorSourceKey', 'status', 'updatedAt'] as const
   $columns = EmployeeSchema.$columns
   @column()
   declare alternatePhone: string | null
@@ -64,6 +113,8 @@ export class EmployeeSchema extends BaseModel {
   declare costCenterCode: string | null
   @column()
   declare costCenterDescription: string | null
+  @column()
+  declare cpf: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -72,6 +123,8 @@ export class EmployeeSchema extends BaseModel {
   declare fullName: string
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare normalizedCpf: string | null
   @column()
   declare normalizedName: string
   @column()

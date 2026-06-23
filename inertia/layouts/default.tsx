@@ -12,6 +12,7 @@ import {
   UserGear,
   Users,
   WhatsappLogo,
+  ClipboardText,
 } from '@phosphor-icons/react'
 import { type Data } from '@generated/data'
 
@@ -25,6 +26,7 @@ type SharedUser = {
 const publicPages = new Set([
   'auth/login',
   'auth/signup',
+  'public/collaborator_register',
   'errors/not_found',
   'errors/server_error',
 ])
@@ -42,6 +44,7 @@ const navigationItems = [
   { href: '/veiculos', label: 'Veículos', icon: Car, roles: ['admin'] },
   { href: '/importacoes', label: 'Importações', icon: UploadSimple, roles: ['admin'] },
   { href: '/usuarios', label: 'Usuários', icon: UserGear, roles: ['admin'] },
+  { href: '/usuarios/aprovacoes', label: 'Aprovações', icon: ClipboardText, roles: ['admin'] },
 ] as const
 
 export default function Layout({ children }: { children: ReactElement<Data.SharedProps> }) {

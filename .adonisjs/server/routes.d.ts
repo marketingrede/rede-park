@@ -8,6 +8,9 @@ export type ScannedRoutes = {
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
+    'public.collaborator_register': { paramsTuple?: []; params?: {} }
+    'public_collaborators.lookup': { paramsTuple?: []; params?: {} }
+    'public_collaborators.submit': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'operations.index': { paramsTuple?: []; params?: {} }
     'visitors.index': { paramsTuple?: []; params?: {} }
@@ -32,10 +35,14 @@ export type ScannedRoutes = {
     'users.index': { paramsTuple?: []; params?: {} }
     'users.store': { paramsTuple?: []; params?: {} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.approvals.index': { paramsTuple?: []; params?: {} }
+    'admin.approvals.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.approvals.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
+    'public.collaborator_register': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'operations.index': { paramsTuple?: []; params?: {} }
     'visitors.index': { paramsTuple?: []; params?: {} }
@@ -46,10 +53,12 @@ export type ScannedRoutes = {
     'imports.index': { paramsTuple?: []; params?: {} }
     'imports.download_template': { paramsTuple: [ParamValue]; params: {'type': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
+    'admin.approvals.index': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'new_account.create': { paramsTuple?: []; params?: {} }
     'session.create': { paramsTuple?: []; params?: {} }
+    'public.collaborator_register': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'operations.index': { paramsTuple?: []; params?: {} }
     'visitors.index': { paramsTuple?: []; params?: {} }
@@ -60,10 +69,13 @@ export type ScannedRoutes = {
     'imports.index': { paramsTuple?: []; params?: {} }
     'imports.download_template': { paramsTuple: [ParamValue]; params: {'type': ParamValue} }
     'users.index': { paramsTuple?: []; params?: {} }
+    'admin.approvals.index': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }
     'session.store': { paramsTuple?: []; params?: {} }
+    'public_collaborators.lookup': { paramsTuple?: []; params?: {} }
+    'public_collaborators.submit': { paramsTuple?: []; params?: {} }
     'visitors.store': { paramsTuple?: []; params?: {} }
     'visitors.exit': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'contact_attempts.store': { paramsTuple?: []; params?: {} }
@@ -78,6 +90,8 @@ export type ScannedRoutes = {
     'imports.bulk_destroy': { paramsTuple?: []; params?: {} }
     'users.store': { paramsTuple?: []; params?: {} }
     'users.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.approvals.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.approvals.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

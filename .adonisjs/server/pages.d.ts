@@ -24,5 +24,7 @@ declare module '@adonisjs/inertia/types' {
     'users/index': ExtractProps<(typeof import('../../inertia/pages/users/index.tsx'))['default']>
     'vehicles/index': ExtractProps<(typeof import('../../inertia/pages/vehicles/index.tsx'))['default']>
     'visitors/index': ExtractProps<(typeof import('../../inertia/pages/visitors/index.tsx'))['default']>
+    'public/collaborator_register': ExtractProps<(typeof import('../../inertia/pages/public/collaborator_register.tsx'))['default']>
+    'admin/approvals/index': ExtractProps<(typeof import('../../inertia/pages/admin/approvals/index.tsx'))['default']>
   }
 }

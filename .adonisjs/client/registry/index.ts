@@ -30,6 +30,24 @@ const routes = {
     tokens: [{"old":"/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['session.store']['types'],
   },
+  'public.collaborator_register': {
+    methods: ["GET","HEAD"],
+    pattern: '/cadastro-colaborador',
+    tokens: [{"old":"/cadastro-colaborador","type":0,"val":"cadastro-colaborador","end":""}],
+    types: placeholder as Registry['public.collaborator_register']['types'],
+  },
+  'public_collaborators.lookup': {
+    methods: ["POST"],
+    pattern: '/api/public/employees/lookup',
+    tokens: [{"old":"/api/public/employees/lookup","type":0,"val":"api","end":""},{"old":"/api/public/employees/lookup","type":0,"val":"public","end":""},{"old":"/api/public/employees/lookup","type":0,"val":"employees","end":""},{"old":"/api/public/employees/lookup","type":0,"val":"lookup","end":""}],
+    types: placeholder as Registry['public_collaborators.lookup']['types'],
+  },
+  'public_collaborators.submit': {
+    methods: ["POST"],
+    pattern: '/api/public/employees/submit',
+    tokens: [{"old":"/api/public/employees/submit","type":0,"val":"api","end":""},{"old":"/api/public/employees/submit","type":0,"val":"public","end":""},{"old":"/api/public/employees/submit","type":0,"val":"employees","end":""},{"old":"/api/public/employees/submit","type":0,"val":"submit","end":""}],
+    types: placeholder as Registry['public_collaborators.submit']['types'],
+  },
   'home': {
     methods: ["GET","HEAD"],
     pattern: '/',
@@ -173,6 +191,24 @@ const routes = {
     pattern: '/usuarios/:id',
     tokens: [{"old":"/usuarios/:id","type":0,"val":"usuarios","end":""},{"old":"/usuarios/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['users.update']['types'],
+  },
+  'admin.approvals.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/usuarios/aprovacoes',
+    tokens: [{"old":"/usuarios/aprovacoes","type":0,"val":"usuarios","end":""},{"old":"/usuarios/aprovacoes","type":0,"val":"aprovacoes","end":""}],
+    types: placeholder as Registry['admin.approvals.index']['types'],
+  },
+  'admin.approvals.approve': {
+    methods: ["POST"],
+    pattern: '/usuarios/aprovacoes/:id/aprovar',
+    tokens: [{"old":"/usuarios/aprovacoes/:id/aprovar","type":0,"val":"usuarios","end":""},{"old":"/usuarios/aprovacoes/:id/aprovar","type":0,"val":"aprovacoes","end":""},{"old":"/usuarios/aprovacoes/:id/aprovar","type":1,"val":"id","end":""},{"old":"/usuarios/aprovacoes/:id/aprovar","type":0,"val":"aprovar","end":""}],
+    types: placeholder as Registry['admin.approvals.approve']['types'],
+  },
+  'admin.approvals.reject': {
+    methods: ["POST"],
+    pattern: '/usuarios/aprovacoes/:id/rejeitar',
+    tokens: [{"old":"/usuarios/aprovacoes/:id/rejeitar","type":0,"val":"usuarios","end":""},{"old":"/usuarios/aprovacoes/:id/rejeitar","type":0,"val":"aprovacoes","end":""},{"old":"/usuarios/aprovacoes/:id/rejeitar","type":1,"val":"id","end":""},{"old":"/usuarios/aprovacoes/:id/rejeitar","type":0,"val":"rejeitar","end":""}],
+    types: placeholder as Registry['admin.approvals.reject']['types'],
   },
 } as const satisfies Record<string, AdonisEndpoint>
 
