@@ -2,7 +2,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Employee from '#models/employee'
 import ApprovalRequest from '#models/approval_request'
 import { storeUploadedImage } from '#services/upload_storage_service'
-import { normalizePhone, normalizePlate } from '#services/normalization_service'
+import {
+  normalizeSearchText,
+  normalizePhone,
+  normalizePlate,
+} from '#services/normalization_service'
 import { DateTime } from 'luxon'
 
 export default class PublicCollaboratorsController {
@@ -11,34 +15,38 @@ export default class PublicCollaboratorsController {
   }
 
   async lookup({ request, response }: HttpContext) {
-    const { cpf, birthDate } = request.only(['cpf', 'birthDate'])
+    const { fullName, birthDate } = request.only(['fullName', 'birthDate'])
 
-    if (!cpf) {
-      return response.badRequest({ message: 'CPF é obrigatório.' })
+    if (!fullName) {
+      return response.badRequest({ message: 'Nome completo é obrigatório.' })
     }
 
-    const cleanCpf = String(cpf).replace(/\D/g, '')
-    const employee = await Employee.query().where('normalized_cpf', cleanCpf).first()
+    if (!birthDate) {
+      return response.badRequest({ message: 'Data de nascimento é obrigatória.' })
+    }
 
-    if (!employee) {
+    const normalizedSearch = normalizeSearchText(fullName)
+    const inputBirthDate = DateTime.fromISO(birthDate)
+
+    const employees = await Employee.query()
+      .where('normalized_name', 'like', `%${normalizedSearch}%`)
+      .where('status', 'active')
+
+    let matchedEmployee: InstanceType<typeof Employee> | null = null
+
+    for (const emp of employees) {
+      if (emp.birthDate && emp.birthDate.hasSame(inputBirthDate, 'day')) {
+        matchedEmployee = emp
+        break
+      }
+    }
+
+    if (!matchedEmployee) {
       return response.ok({ found: false })
     }
 
-    // If employee has a birthDate in our records, enforce matching it for security
-    if (employee.birthDate && birthDate) {
-      const inputBirthDate = DateTime.fromISO(birthDate)
-      const matches = employee.birthDate.hasSame(inputBirthDate, 'day')
-      if (!matches) {
-        return response.badRequest({ message: 'Data de nascimento não confere com o cadastro.' })
-      }
-    } else if (employee.birthDate && !birthDate) {
-      return response.badRequest({
-        message: 'Data de nascimento é necessária para validar este CPF.',
-      })
-    }
-
     // Mask name for privacy (LGPD compliance)
-    const nameParts = employee.fullName.split(' ')
+    const nameParts = matchedEmployee.fullName.split(' ')
     const maskedName = nameParts
       .map((part, index) => {
         if (index === 0 || index === nameParts.length - 1) return part
@@ -49,12 +57,12 @@ export default class PublicCollaboratorsController {
     return response.ok({
       found: true,
       employee: {
-        id: employee.id,
+        id: matchedEmployee.id,
         fullName: maskedName,
-        companyName: employee.companyName,
-        roleName: employee.roleName,
-        email: employee.email,
-        phone: employee.phone,
+        companyName: matchedEmployee.companyName,
+        roleName: matchedEmployee.roleName,
+        email: matchedEmployee.email,
+        phone: matchedEmployee.phone,
       },
     })
   }
@@ -67,13 +75,12 @@ export default class PublicCollaboratorsController {
     })
 
     const photoPath = await storeUploadedImage(photo, 'employees')
-    const cleanCpf = String(payload.cpf).replace(/\D/g, '')
 
-    // Create the approval request
+    // Create the approval request without CPF
     await ApprovalRequest.create({
       employeeId: payload.employeeId ? Number(payload.employeeId) : null,
-      cpf: payload.cpf,
-      normalizedCpf: cleanCpf,
+      cpf: '',
+      normalizedCpf: '',
       fullName: payload.fullName,
       birthDate: payload.birthDate ? DateTime.fromISO(payload.birthDate) : null,
       phone: payload.phone ? normalizePhone(payload.phone) : null,

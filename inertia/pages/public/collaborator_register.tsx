@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Head, Link } from '@inertiajs/react'
 import { toast } from 'sonner'
+import type { InertiaProps } from '~/types'
 import {
   User,
   Phone,
@@ -10,11 +11,53 @@ import {
   IdentificationCard,
   Camera,
   CheckCircle,
+  CalendarBlank,
 } from '@phosphor-icons/react'
 
-export default function CollaboratorRegister() {
+type PageProps = InertiaProps<{
+  csrfToken: string
+}>
+
+type LookupResponse = {
+  found?: boolean
+  message?: string
+  employee?: {
+    id: number
+    fullName: string
+    companyName: string | null
+    roleName: string | null
+    email: string | null
+    phone: string | null
+  }
+}
+
+type SubmitResponse = {
+  success?: boolean
+  message?: string
+}
+
+async function readApiResponse<T extends { message?: string }>(response: Response): Promise<T> {
+  const text = await response.text()
+
+  if (!text) {
+    return {} as T
+  }
+
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    const message = text
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    return { message: message || 'Resposta inesperada do servidor.' } as T
+  }
+}
+
+export default function CollaboratorRegister({ csrfToken }: PageProps) {
   const [step, setStep] = useState<1 | 2 | 3>(1) // 1: Lookup, 2: Registration details, 3: Success
-  const [cpf, setCpf] = useState('')
+  const [lookupName, setLookupName] = useState('')
   const [birthDate, setBirthDate] = useState('')
   const [isNewEmployee, setIsNewEmployee] = useState(false)
   const [employeeId, setEmployeeId] = useState<number | null>(null)
@@ -39,18 +82,6 @@ export default function CollaboratorRegister() {
   const [vehicleType, setVehicleType] = useState('car')
 
   const [loading, setLoading] = useState(false)
-
-  // Mask CPF input (000.000.000-00)
-  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, '')
-    if (value.length <= 11) {
-      value = value
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d)/, '$1.$2')
-        .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
-      setCpf(value)
-    }
-  }
 
   // Mask Phone input ((00) 00000-0000)
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'phone' | 'alt') => {
@@ -82,8 +113,12 @@ export default function CollaboratorRegister() {
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!cpf || !birthDate) {
-      toast.error('Preencha o CPF e a data de nascimento.')
+    if (!lookupName.trim()) {
+      toast.error('Preencha seu nome completo.')
+      return
+    }
+    if (!birthDate) {
+      toast.error('Preencha a data de nascimento.')
       return
     }
 
@@ -91,17 +126,22 @@ export default function CollaboratorRegister() {
     try {
       const response = await fetch('/api/public/employees/lookup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cpf, birthDate }),
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({ fullName: lookupName, birthDate, _csrf: csrfToken }),
       })
 
-      const data = await response.json()
+      const data = await readApiResponse<LookupResponse>(response)
 
       if (!response.ok) {
-        throw new Error(data.message || 'Erro ao consultar CPF.')
+        throw new Error(data.message || 'Erro ao consultar cadastro.')
       }
 
-      if (data.found) {
+      if (data.found && data.employee) {
         setEmployeeId(data.employee.id)
         setFullName(data.employee.fullName) // Masked name
         setCompanyName(data.employee.companyName || '')
@@ -118,7 +158,9 @@ export default function CollaboratorRegister() {
         setEmail('')
         setPhone('')
         setIsNewEmployee(true)
-        toast.info('CPF não localizado. Preencha todos os campos para solicitar um novo cadastro.')
+        toast.info(
+          'Cadastro não localizado. Preencha todos os campos para solicitar um novo cadastro.'
+        )
       }
       setStep(2)
     } catch (err: any) {
@@ -138,8 +180,8 @@ export default function CollaboratorRegister() {
     setLoading(true)
     try {
       const formData = new FormData()
+      formData.append('_csrf', csrfToken)
       formData.append('employeeId', employeeId ? String(employeeId) : '')
-      formData.append('cpf', cpf)
       formData.append('birthDate', birthDate)
       formData.append('fullName', fullName)
       formData.append('phone', phone)
@@ -163,10 +205,15 @@ export default function CollaboratorRegister() {
 
       const response = await fetch('/api/public/employees/submit', {
         method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken,
+        },
+        credentials: 'same-origin',
         body: formData,
       })
 
-      const data = await response.json()
+      const data = await readApiResponse<SubmitResponse>(response)
 
       if (!response.ok) {
         throw new Error(data.message || 'Erro ao enviar cadastro.')
@@ -204,19 +251,19 @@ export default function CollaboratorRegister() {
             <>
               <h1>Validação de Colaborador</h1>
               <p>
-                Insira seu CPF e data de nascimento para iniciar seu cadastro ou atualizar seus
-                dados.
+                Insira seu nome completo e data de nascimento para iniciar seu cadastro ou atualizar
+                seus dados.
               </p>
 
               <form onSubmit={handleVerify}>
                 <div className="field">
-                  <label htmlFor="cpf">CPF</label>
+                  <label htmlFor="lookupName">Nome Completo</label>
                   <input
                     type="text"
-                    id="cpf"
-                    placeholder="000.000.000-00"
-                    value={cpf}
-                    onChange={handleCpfChange}
+                    id="lookupName"
+                    placeholder="Seu nome completo"
+                    value={lookupName}
+                    onChange={(e) => setLookupName(e.target.value)}
                     required
                   />
                 </div>
@@ -277,6 +324,29 @@ export default function CollaboratorRegister() {
                         style={{ paddingLeft: '2.5rem' }}
                       />
                       <User
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="birthDateStep2">Data de Nascimento</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="date"
+                        id="birthDateStep2"
+                        value={birthDate}
+                        disabled={!isNewEmployee}
+                        style={{ paddingLeft: '2.5rem' }}
+                      />
+                      <CalendarBlank
                         size={16}
                         style={{
                           position: 'absolute',
@@ -591,7 +661,7 @@ export default function CollaboratorRegister() {
               <button
                 onClick={() => {
                   setStep(1)
-                  setCpf('')
+                  setLookupName('')
                   setBirthDate('')
                 }}
                 style={{ width: '100%' }}
