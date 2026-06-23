@@ -34,12 +34,16 @@ router
 const PublicCollaboratorsController = () => import('#controllers/public_collaborators_controller')
 const ApprovalsController = () => import('#controllers/approvals_controller')
 
-router.get('cadastro-colaborador', [PublicCollaboratorsController, 'showForm']).as('public.collaborator_register')
+router
+  .get('cadastro-colaborador', [PublicCollaboratorsController, 'showForm'])
+  .as('public.collaborator_register')
 router.post('api/public/employees/lookup', [PublicCollaboratorsController, 'lookup'])
 router.post('api/public/employees/submit', [PublicCollaboratorsController, 'submit'])
-router.get('politica-privacidade', ({ inertia }) => {
-  return inertia.render('public/privacy_policy', {})
-}).as('public.privacy_policy')
+router
+  .get('politica-privacidade', ({ inertia }) => {
+    return inertia.render('public/privacy_policy', {})
+  })
+  .as('public.privacy_policy')
 
 router
   .group(() => {
@@ -60,7 +64,9 @@ router
         router.get('dashboard', [DashboardController, 'index']).as('dashboard.index')
         router.get('colaboradores', [EmployeesController, 'index']).as('employees.index')
         router.post('colaboradores', [EmployeesController, 'store']).as('employees.store')
-        router.post('colaboradores/excluir-lote', [EmployeesController, 'bulkDestroy']).as('employees.bulk_destroy')
+        router
+          .post('colaboradores/excluir-lote', [EmployeesController, 'bulkDestroy'])
+          .as('employees.bulk_destroy')
         router.post('colaboradores/:id', [EmployeesController, 'update']).as('employees.update')
 
         router.get('veiculos', [VehiclesController, 'index']).as('vehicles.index')
@@ -69,17 +75,29 @@ router
 
         router.get('importacoes', [ImportsController, 'index']).as('imports.index')
         router.post('importacoes', [ImportsController, 'store']).as('imports.store')
-        router.get('importacoes/modelos/:type', [ImportsController, 'downloadTemplate']).as('imports.download_template')
-        router.post('importacoes/auxiliar', [ImportsController, 'storeAuxiliary']).as('imports.store_auxiliary')
-        router.post('importacoes/excluir-lote', [ImportsController, 'bulkDestroy']).as('imports.bulk_destroy')
+        router
+          .get('importacoes/modelos/:type', [ImportsController, 'downloadTemplate'])
+          .as('imports.download_template')
+        router
+          .post('importacoes/auxiliar', [ImportsController, 'storeAuxiliary'])
+          .as('imports.store_auxiliary')
+        router
+          .post('importacoes/excluir-lote', [ImportsController, 'bulkDestroy'])
+          .as('imports.bulk_destroy')
 
         router.get('usuarios', [UsersController, 'index']).as('users.index')
         router.post('usuarios', [UsersController, 'store']).as('users.store')
         router.post('usuarios/:id', [UsersController, 'update']).as('users.update')
 
-        router.get('usuarios/aprovacoes', [ApprovalsController, 'index']).as('admin.approvals.index')
-        router.post('usuarios/aprovacoes/:id/aprovar', [ApprovalsController, 'approve']).as('admin.approvals.approve')
-        router.post('usuarios/aprovacoes/:id/rejeitar', [ApprovalsController, 'reject']).as('admin.approvals.reject')
+        router
+          .get('usuarios/aprovacoes', [ApprovalsController, 'index'])
+          .as('admin.approvals.index')
+        router
+          .post('usuarios/aprovacoes/:id/aprovar', [ApprovalsController, 'approve'])
+          .as('admin.approvals.approve')
+        router
+          .post('usuarios/aprovacoes/:id/rejeitar', [ApprovalsController, 'reject'])
+          .as('admin.approvals.reject')
       })
       .use(middleware.admin())
   })

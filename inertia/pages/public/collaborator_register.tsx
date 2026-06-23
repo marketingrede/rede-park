@@ -9,7 +9,7 @@ import {
   Briefcase,
   IdentificationCard,
   Camera,
-  CheckCircle
+  CheckCircle,
 } from '@phosphor-icons/react'
 
 export default function CollaboratorRegister() {
@@ -18,7 +18,7 @@ export default function CollaboratorRegister() {
   const [birthDate, setBirthDate] = useState('')
   const [isNewEmployee, setIsNewEmployee] = useState(false)
   const [employeeId, setEmployeeId] = useState<number | null>(null)
-  
+
   // Registration form state
   const [fullName, setFullName] = useState('')
   const [phone, setPhone] = useState('')
@@ -56,9 +56,7 @@ export default function CollaboratorRegister() {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'phone' | 'alt') => {
     let value = e.target.value.replace(/\D/g, '')
     if (value.length <= 11) {
-      value = value
-        .replace(/(\d{2})(\d)/, '($1) $2')
-        .replace(/(\d{5})(\d)/, '$1-$2')
+      value = value.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2')
       if (field === 'phone') setPhone(value)
       else setAlternatePhone(value)
     }
@@ -94,7 +92,7 @@ export default function CollaboratorRegister() {
       const response = await fetch('/api/public/employees/lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cpf, birthDate })
+        body: JSON.stringify({ cpf, birthDate }),
       })
 
       const data = await response.json()
@@ -165,7 +163,7 @@ export default function CollaboratorRegister() {
 
       const response = await fetch('/api/public/employees/submit', {
         method: 'POST',
-        body: formData
+        body: formData,
       })
 
       const data = await response.json()
@@ -187,10 +185,17 @@ export default function CollaboratorRegister() {
     <>
       <Head title="Cadastro de Colaborador | Rede Park" />
       <main className="auth-page">
-        <section className="auth-card" style={{ width: step === 2 ? 'min(640px, 100%)' : 'min(440px, 100%)' }}>
+        <section
+          className="auth-card"
+          style={{ width: step === 2 ? 'min(640px, 100%)' : 'min(440px, 100%)' }}
+        >
           <div className="auth-brand">
             <span className="brand-mark" aria-hidden="true">
-              <img src="/logo-rede-trilha.svg" alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+              <img
+                src="/logo-rede-trilha.svg"
+                alt=""
+                style={{ width: 32, height: 32, objectFit: 'contain' }}
+              />
             </span>
             <span>Rede Park</span>
           </div>
@@ -198,8 +203,11 @@ export default function CollaboratorRegister() {
           {step === 1 && (
             <>
               <h1>Validação de Colaborador</h1>
-              <p>Insira seu CPF e data de nascimento para iniciar seu cadastro ou atualizar seus dados.</p>
-              
+              <p>
+                Insira seu CPF e data de nascimento para iniciar seu cadastro ou atualizar seus
+                dados.
+              </p>
+
               <form onSubmit={handleVerify}>
                 <div className="field">
                   <label htmlFor="cpf">CPF</label>
@@ -224,7 +232,11 @@ export default function CollaboratorRegister() {
                   />
                 </div>
 
-                <button type="submit" disabled={loading} style={{ width: '100%', marginTop: '1.5rem' }}>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{ width: '100%', marginTop: '1.5rem' }}
+                >
                   <IdentificationCard size={18} />
                   {loading ? 'Verificando...' : 'Verificar Cadastro'}
                 </button>
@@ -236,14 +248,20 @@ export default function CollaboratorRegister() {
             <>
               <h1>Dados Cadastrais</h1>
               <p>
-                {isNewEmployee 
-                  ? 'Preencha o formulário para solicitar seu cadastro de colaborador.' 
+                {isNewEmployee
+                  ? 'Preencha o formulário para solicitar seu cadastro de colaborador.'
                   : 'Atualize seus dados de contato e foto de perfil nos campos abaixo.'}
               </p>
 
               <form onSubmit={handleSubmit} className="stack">
-                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
-                  
+                <div
+                  className="form-grid"
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                    gap: '1rem',
+                  }}
+                >
                   {/* Personal details */}
                   <div className="field">
                     <label htmlFor="fullName">Nome Completo</label>
@@ -258,7 +276,16 @@ export default function CollaboratorRegister() {
                         placeholder="Seu nome completo"
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <User size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <User
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -273,7 +300,16 @@ export default function CollaboratorRegister() {
                         placeholder="seu@email.com"
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <Envelope size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <Envelope
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -289,7 +325,16 @@ export default function CollaboratorRegister() {
                         required
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <Phone
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -304,7 +349,16 @@ export default function CollaboratorRegister() {
                         placeholder="(00) 00000-0000"
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <Phone size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <Phone
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -321,7 +375,16 @@ export default function CollaboratorRegister() {
                         placeholder="Nome da empresa"
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <Building size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <Building
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -337,10 +400,18 @@ export default function CollaboratorRegister() {
                         placeholder="Seu cargo na empresa"
                         style={{ paddingLeft: '2.5rem' }}
                       />
-                      <Briefcase size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--muted)' }} />
+                      <Briefcase
+                        size={16}
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          color: 'var(--muted)',
+                        }}
+                      />
                     </div>
                   </div>
-
                 </div>
 
                 {/* Photo upload with preview */}
@@ -361,13 +432,23 @@ export default function CollaboratorRegister() {
                         onChange={handlePhotoChange}
                         id="photoFile"
                       />
-                      <span className="small muted">Selecione uma foto sua nítida (JPG ou PNG, máx. 4MB)</span>
+                      <span className="small muted">
+                        Selecione uma foto sua nítida (JPG ou PNG, máx. 4MB)
+                      </span>
                     </div>
                   </div>
                 </div>
 
                 {/* Vehicle option */}
-                <div style={{ margin: '1.5rem 0 0.5rem 0', padding: '1rem', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface-soft)' }}>
+                <div
+                  style={{
+                    margin: '1.5rem 0 0.5rem 0',
+                    padding: '1rem',
+                    border: '1px solid var(--border)',
+                    borderRadius: 'var(--radius-lg)',
+                    background: 'var(--surface-soft)',
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <input
                       type="checkbox"
@@ -376,13 +457,24 @@ export default function CollaboratorRegister() {
                       onChange={(e) => setHasVehicle(e.target.checked)}
                       style={{ width: 'auto', margin: 0 }}
                     />
-                    <label htmlFor="vehicleCheckbox" style={{ fontWeight: 600, cursor: 'pointer', margin: 0 }}>
+                    <label
+                      htmlFor="vehicleCheckbox"
+                      style={{ fontWeight: 600, cursor: 'pointer', margin: 0 }}
+                    >
                       Possuo veículo de acesso ao estacionamento
                     </label>
                   </div>
 
                   {hasVehicle && (
-                    <div className="stack" style={{ marginTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                    <div
+                      className="stack"
+                      style={{
+                        marginTop: '1rem',
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                        gap: '1rem',
+                      }}
+                    >
                       <div className="field">
                         <label htmlFor="vehiclePlate">Placa do Veículo</label>
                         <input
@@ -451,15 +543,27 @@ export default function CollaboratorRegister() {
                   )}
                 </div>
 
-                <p className="small muted" style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.85rem' }}>
+                <p
+                  className="small muted"
+                  style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.85rem' }}
+                >
                   Ao enviar este cadastro, você declara estar ciente e concordar com a nossa{' '}
-                  <Link href="/politica-privacidade" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>
+                  <Link
+                    href="/politica-privacidade"
+                    style={{ color: 'var(--primary)', textDecoration: 'underline' }}
+                  >
                     Política de Uso, Segurança e Armazenamento dos Dados do Colaborador
-                  </Link>.
+                  </Link>
+                  .
                 </p>
 
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
-                  <button type="button" className="secondary" onClick={() => setStep(1)} style={{ flex: 1 }}>
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => setStep(1)}
+                    style={{ flex: 1 }}
+                  >
                     Voltar
                   </button>
                   <button type="submit" disabled={loading} style={{ flex: 2 }}>
@@ -472,12 +576,26 @@ export default function CollaboratorRegister() {
 
           {step === 3 && (
             <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-              <CheckCircle size={64} color="var(--success)" weight="duotone" style={{ margin: '0 auto 1.5rem auto' }} />
+              <CheckCircle
+                size={64}
+                color="var(--success)"
+                weight="duotone"
+                style={{ margin: '0 auto 1.5rem auto' }}
+              />
               <h1>Solicitação Enviada!</h1>
               <p style={{ margin: '1rem 0 2rem 0' }}>
-                Seu cadastro foi enviado com sucesso para a fila de análise. O administrador do sistema revisará os dados e, assim que aprovados, você terá acesso liberado ao estacionamento.
+                Seu cadastro foi enviado com sucesso para a fila de análise. O administrador do
+                sistema revisará os dados e, assim que aprovados, você terá acesso liberado ao
+                estacionamento.
               </p>
-              <button onClick={() => { setStep(1); setCpf(''); setBirthDate(''); }} style={{ width: '100%' }}>
+              <button
+                onClick={() => {
+                  setStep(1)
+                  setCpf('')
+                  setBirthDate('')
+                }}
+                style={{ width: '100%' }}
+              >
                 Entendi
               </button>
             </div>

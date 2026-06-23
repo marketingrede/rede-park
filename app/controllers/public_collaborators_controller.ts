@@ -32,7 +32,9 @@ export default class PublicCollaboratorsController {
         return response.badRequest({ message: 'Data de nascimento não confere com o cadastro.' })
       }
     } else if (employee.birthDate && !birthDate) {
-      return response.badRequest({ message: 'Data de nascimento é necessária para validar este CPF.' })
+      return response.badRequest({
+        message: 'Data de nascimento é necessária para validar este CPF.',
+      })
     }
 
     // Mask name for privacy (LGPD compliance)

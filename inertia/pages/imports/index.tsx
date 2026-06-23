@@ -68,7 +68,6 @@ export default function ImportsIndex({ imports }: PageProps) {
     }
   }, [])
 
-
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('redepark_items_per_page')
@@ -88,7 +87,7 @@ export default function ImportsIndex({ imports }: PageProps) {
   }
 
   const totalPages = Math.ceil(imports.length / itemsPerPage)
-  
+
   const paginatedImports = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return imports.slice(start, start + itemsPerPage)
@@ -108,7 +107,8 @@ export default function ImportsIndex({ imports }: PageProps) {
 
   const [selectedIds, setSelectedIds] = useState<number[]>([])
 
-  const isAllSelected = paginatedImports.length > 0 && paginatedImports.every((r) => selectedIds.includes(r.id))
+  const isAllSelected =
+    paginatedImports.length > 0 && paginatedImports.every((r) => selectedIds.includes(r.id))
 
   const handleSelectAll = () => {
     if (isAllSelected) {
@@ -169,14 +169,17 @@ export default function ImportsIndex({ imports }: PageProps) {
 
       <div className="grid-equal">
         <section className="panel">
-          <div className="section-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            className="section-heading"
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          >
             <div>
               <h2>Cadastro Senior</h2>
               <p>Planilha principal de colaboradores (XLSX, CSV, JSON).</p>
             </div>
-            <a 
-              href="/importacoes/modelos/senior" 
-              className="button secondary compact" 
+            <a
+              href="/importacoes/modelos/senior"
+              className="button secondary compact"
               style={{ fontSize: '11px', height: '32px', minHeight: 'auto', gap: '4px' }}
               title="Baixar planilha de exemplo para Cadastro Senior"
             >
@@ -186,8 +189,8 @@ export default function ImportsIndex({ imports }: PageProps) {
           </div>
           <Form action={{ url: '/importacoes', method: 'post' }}>
             {({ processing }) => (
-              <div 
-                className="upload-area" 
+              <div
+                className="upload-area"
                 style={{ cursor: 'pointer' }}
                 onClick={() => seniorFileRef.current?.click()}
               >
@@ -198,7 +201,9 @@ export default function ImportsIndex({ imports }: PageProps) {
                   {seniorFileName ? `📄 ${seniorFileName}` : 'Clique para selecionar o arquivo'}
                 </p>
                 <p className="small muted" style={{ marginTop: 4 }}>
-                  {seniorFileName ? 'Clique novamente para alterar' : 'Arraste o arquivo ou clique aqui'}
+                  {seniorFileName
+                    ? 'Clique novamente para alterar'
+                    : 'Arraste o arquivo ou clique aqui'}
                 </p>
                 <input
                   ref={seniorFileRef}
@@ -213,9 +218,9 @@ export default function ImportsIndex({ imports }: PageProps) {
                     setSeniorFileName(file ? file.name : null)
                   }}
                 />
-                <button 
-                  type="submit" 
-                  disabled={processing || !seniorFileName} 
+                <button
+                  type="submit"
+                  disabled={processing || !seniorFileName}
                   style={{ marginTop: 16 }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -228,14 +233,17 @@ export default function ImportsIndex({ imports }: PageProps) {
         </section>
 
         <section className="panel">
-          <div className="section-heading" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div
+            className="section-heading"
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          >
             <div>
               <h2>Planilha Auxiliar (Veículos/Contatos)</h2>
               <p>Placa, modelo, cor de carro e telefone (XLSX, CSV, JSON).</p>
             </div>
-            <a 
-              href="/importacoes/modelos/auxiliary" 
-              className="button secondary compact" 
+            <a
+              href="/importacoes/modelos/auxiliary"
+              className="button secondary compact"
               style={{ fontSize: '11px', height: '32px', minHeight: 'auto', gap: '4px' }}
               title="Baixar planilha de exemplo para Veículos/Contatos"
             >
@@ -245,8 +253,8 @@ export default function ImportsIndex({ imports }: PageProps) {
           </div>
           <Form action={{ url: '/importacoes/auxiliar', method: 'post' }}>
             {({ processing }) => (
-              <div 
-                className="upload-area" 
+              <div
+                className="upload-area"
                 style={{ cursor: 'pointer' }}
                 onClick={() => auxiliaryFileRef.current?.click()}
               >
@@ -254,10 +262,14 @@ export default function ImportsIndex({ imports }: PageProps) {
                   <UploadSimple size={32} />
                 </div>
                 <p style={{ fontWeight: 600, color: 'var(--accent)' }}>
-                  {auxiliaryFileName ? `📄 ${auxiliaryFileName}` : 'Clique para selecionar o arquivo'}
+                  {auxiliaryFileName
+                    ? `📄 ${auxiliaryFileName}`
+                    : 'Clique para selecionar o arquivo'}
                 </p>
                 <p className="small muted" style={{ marginTop: 4 }}>
-                  {auxiliaryFileName ? 'Clique novamente para alterar' : 'Arraste o arquivo ou clique aqui'}
+                  {auxiliaryFileName
+                    ? 'Clique novamente para alterar'
+                    : 'Arraste o arquivo ou clique aqui'}
                 </p>
                 <input
                   ref={auxiliaryFileRef}
@@ -272,9 +284,9 @@ export default function ImportsIndex({ imports }: PageProps) {
                     setAuxiliaryFileName(file ? file.name : null)
                   }}
                 />
-                <button 
-                  type="submit" 
-                  disabled={processing || !auxiliaryFileName} 
+                <button
+                  type="submit"
+                  disabled={processing || !auxiliaryFileName}
                   style={{ marginTop: 16 }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -354,19 +366,28 @@ export default function ImportsIndex({ imports }: PageProps) {
                     </td>
                     <td>
                       <strong>{record.sourceFileName || `Importação ${record.id}`}</strong>
-                      <div className="small muted" style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 4 }}>
-                        <span 
-                          className="status" 
-                          style={{ 
-                            fontSize: '10px', 
+                      <div
+                        className="small muted"
+                        style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 4 }}
+                      >
+                        <span
+                          className="status"
+                          style={{
+                            fontSize: '10px',
                             padding: '2px 6px',
-                            background: record.sourceType.startsWith('auxiliary_') ? 'var(--accent-soft)' : 'var(--success-soft)', 
-                            color: record.sourceType.startsWith('auxiliary_') ? 'var(--accent)' : 'var(--success)',
+                            background: record.sourceType.startsWith('auxiliary_')
+                              ? 'var(--accent-soft)'
+                              : 'var(--success-soft)',
+                            color: record.sourceType.startsWith('auxiliary_')
+                              ? 'var(--accent)'
+                              : 'var(--success)',
                             borderColor: 'transparent',
-                            fontWeight: 700
+                            fontWeight: 700,
                           }}
                         >
-                          {record.sourceType.startsWith('auxiliary_') ? 'Veículos/Contatos' : 'Cadastro Senior'}
+                          {record.sourceType.startsWith('auxiliary_')
+                            ? 'Veículos/Contatos'
+                            : 'Cadastro Senior'}
                         </span>
                         <span>{record.sourceType.replace('auxiliary_', '').toUpperCase()}</span>
                         <span>•</span>
@@ -395,7 +416,13 @@ export default function ImportsIndex({ imports }: PageProps) {
                         <button
                           type="button"
                           className="secondary compact"
-                          style={{ display: 'block', marginTop: 4, fontSize: '11px', padding: '2px 6px', minHeight: 'auto' }}
+                          style={{
+                            display: 'block',
+                            marginTop: 4,
+                            fontSize: '11px',
+                            padding: '2px 6px',
+                            minHeight: 'auto',
+                          }}
                           onClick={() => setActiveImportForErrors(record)}
                         >
                           Ver Detalhes
@@ -448,7 +475,11 @@ export default function ImportsIndex({ imports }: PageProps) {
                 {getPageNumbers().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                      <span
+                        key={`ellipsis-${index}`}
+                        className="pagination-info"
+                        style={{ minWidth: 'auto' }}
+                      >
                         ...
                       </span>
                     )
@@ -480,12 +511,23 @@ export default function ImportsIndex({ imports }: PageProps) {
       {/* Diagnostics / Errors Details Modal */}
       {activeImportForErrors && (
         <div className="modal-backdrop" onClick={() => setActiveImportForErrors(null)}>
-          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ width: 'min(640px, 100%)' }}>
+          <div
+            className="modal-card"
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: 'min(640px, 100%)' }}
+          >
             <div className="modal-header">
               <div>
                 <h2>Detalhes da Importação</h2>
-                <p style={{ margin: '4px 0 0 0', fontSize: 'var(--font-size-sm)', color: 'var(--muted)' }}>
-                  {activeImportForErrors.sourceFileName || `Importação #${activeImportForErrors.id}`}
+                <p
+                  style={{
+                    margin: '4px 0 0 0',
+                    fontSize: 'var(--font-size-sm)',
+                    color: 'var(--muted)',
+                  }}
+                >
+                  {activeImportForErrors.sourceFileName ||
+                    `Importação #${activeImportForErrors.id}`}
                 </p>
               </div>
               <button
@@ -498,74 +540,173 @@ export default function ImportsIndex({ imports }: PageProps) {
               </button>
             </div>
             <div className="modal-body" style={{ gap: '16px', padding: 'var(--spacing-xl)' }}>
-              <div 
-                style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(4, 1fr)', 
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
                   gap: '12px',
                   background: 'var(--surface-soft)',
                   padding: '12px',
                   borderRadius: 'var(--radius-lg)',
                   border: '1px solid var(--border)',
-                  textAlign: 'center'
+                  textAlign: 'center',
                 }}
               >
                 <div>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Total Linhas</span>
-                  <strong style={{ fontSize: '16px', color: 'var(--text)', display: 'block', marginTop: '4px' }}>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: 'var(--muted)',
+                      fontWeight: 600,
+                      display: 'block',
+                    }}
+                  >
+                    Total Linhas
+                  </span>
+                  <strong
+                    style={{
+                      fontSize: '16px',
+                      color: 'var(--text)',
+                      display: 'block',
+                      marginTop: '4px',
+                    }}
+                  >
                     {activeImportForErrors.totalRows}
                   </strong>
                 </div>
                 <div>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Novos</span>
-                  <strong style={{ fontSize: '16px', color: 'var(--success)', display: 'block', marginTop: '4px' }}>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: 'var(--muted)',
+                      fontWeight: 600,
+                      display: 'block',
+                    }}
+                  >
+                    Novos
+                  </span>
+                  <strong
+                    style={{
+                      fontSize: '16px',
+                      color: 'var(--success)',
+                      display: 'block',
+                      marginTop: '4px',
+                    }}
+                  >
                     {activeImportForErrors.importedCount}
                   </strong>
                 </div>
                 <div>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Atualizados</span>
-                  <strong style={{ fontSize: '16px', color: 'var(--accent)', display: 'block', marginTop: '4px' }}>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: 'var(--muted)',
+                      fontWeight: 600,
+                      display: 'block',
+                    }}
+                  >
+                    Atualizados
+                  </span>
+                  <strong
+                    style={{
+                      fontSize: '16px',
+                      color: 'var(--accent)',
+                      display: 'block',
+                      marginTop: '4px',
+                    }}
+                  >
                     {activeImportForErrors.updatedCount}
                   </strong>
                 </div>
                 <div>
-                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Erros/Pulos</span>
-                  <strong style={{ fontSize: '16px', color: 'var(--danger)', display: 'block', marginTop: '4px' }}>
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: 'var(--muted)',
+                      fontWeight: 600,
+                      display: 'block',
+                    }}
+                  >
+                    Erros/Pulos
+                  </span>
+                  <strong
+                    style={{
+                      fontSize: '16px',
+                      color: 'var(--danger)',
+                      display: 'block',
+                      marginTop: '4px',
+                    }}
+                  >
                     {activeImportForErrors.errorCount + activeImportForErrors.skippedCount}
                   </strong>
                 </div>
               </div>
 
               <div>
-                <h3 style={{ fontSize: 'var(--font-size-base)', fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text)' }}>
+                <h3
+                  style={{
+                    fontSize: 'var(--font-size-base)',
+                    fontWeight: 700,
+                    margin: '0 0 8px 0',
+                    color: 'var(--text)',
+                  }}
+                >
                   Log de Diagnóstico e Erros ({activeImportForErrors.errorCount})
                 </h3>
-                {activeImportForErrors.errorCount === 0 && parseErrors(activeImportForErrors.errorsJson).length === 0 ? (
-                  <p style={{ color: 'var(--success)', margin: 0, fontSize: 'var(--font-size-sm)', fontWeight: 500 }}>
+                {activeImportForErrors.errorCount === 0 &&
+                parseErrors(activeImportForErrors.errorsJson).length === 0 ? (
+                  <p
+                    style={{
+                      color: 'var(--success)',
+                      margin: 0,
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 500,
+                    }}
+                  >
                     Nenhum erro encontrado nesta importação.
                   </p>
                 ) : (
-                  <div 
-                    style={{ 
-                      maxHeight: '260px', 
-                      overflowY: 'auto', 
-                      background: 'var(--danger-soft)', 
-                      border: '1px solid var(--danger)', 
+                  <div
+                    style={{
+                      maxHeight: '260px',
+                      overflowY: 'auto',
+                      background: 'var(--danger-soft)',
+                      border: '1px solid var(--danger)',
                       borderRadius: 'var(--radius-lg)',
-                      padding: '12px'
+                      padding: '12px',
                     }}
                   >
-                    <ul style={{ margin: 0, paddingLeft: '16px', fontSize: 'var(--font-size-sm)', color: 'var(--danger)', lineHeight: '1.6' }}>
+                    <ul
+                      style={{
+                        margin: 0,
+                        paddingLeft: '16px',
+                        fontSize: 'var(--font-size-sm)',
+                        color: 'var(--danger)',
+                        lineHeight: '1.6',
+                      }}
+                    >
                       {parseErrors(activeImportForErrors.errorsJson || '').map((err, idx) => (
-                        <li key={idx} style={{ marginBottom: '6px' }}>{err}</li>
+                        <li key={idx} style={{ marginBottom: '6px' }}>
+                          {err}
+                        </li>
                       ))}
                     </ul>
                   </div>
                 )}
               </div>
             </div>
-            <div className="modal-actions" style={{ padding: '0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl)', borderTop: 'none' }}>
-              <button type="button" className="secondary" onClick={() => setActiveImportForErrors(null)}>
+            <div
+              className="modal-actions"
+              style={{
+                padding: '0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl)',
+                borderTop: 'none',
+              }}
+            >
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => setActiveImportForErrors(null)}
+              >
                 Fechar
               </button>
             </div>
@@ -578,7 +719,9 @@ export default function ImportsIndex({ imports }: PageProps) {
         <div className="loading-overlay">
           <div className="spinner"></div>
           <h2 className="loading-text">Processando Planilha</h2>
-          <p className="loading-subtext">Isso pode levar alguns minutos para planilhas grandes. Por favor, aguarde.</p>
+          <p className="loading-subtext">
+            Isso pode levar alguns minutos para planilhas grandes. Por favor, aguarde.
+          </p>
         </div>
       )}
     </>

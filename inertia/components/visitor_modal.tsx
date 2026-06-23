@@ -162,19 +162,17 @@ export default function VisitorModal({ isOpen, onClose, pastVisitors }: VisitorM
             <h2 id="visitor-modal-title">Registrar Entrada de Visitante</h2>
             <p>CPF, nome completo e placa são obrigatórios</p>
           </div>
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="Fechar"
-            onClick={onClose}
-          >
+          <button type="button" className="icon-button" aria-label="Fechar" onClick={onClose}>
             <X size={18} />
           </button>
         </header>
 
         <div className="modal-body">
           {/* Autocomplete Search input */}
-          <div className="field search-prominent" style={{ position: 'relative', marginBottom: 16 }}>
+          <div
+            className="field search-prominent"
+            style={{ position: 'relative', marginBottom: 16 }}
+          >
             <label htmlFor="modal-visitor-search">Buscar visitante cadastrado (CPF ou Nome)</label>
             <div style={{ position: 'relative', marginTop: 4 }}>
               <input
@@ -376,21 +374,12 @@ export default function VisitorModal({ isOpen, onClose, pastVisitors }: VisitorM
 
               <div className="field wide">
                 <label htmlFor="v-notes">Observações</label>
-                <textarea
-                  id="v-notes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                />
+                <textarea id="v-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
               </div>
             </div>
 
             <div className="modal-actions" style={{ marginTop: 20 }}>
-              <button
-                type="button"
-                className="secondary"
-                onClick={onClose}
-                disabled={isProcessing}
-              >
+              <button type="button" className="secondary" onClick={onClose} disabled={isProcessing}>
                 Cancelar
               </button>
               <button type="submit" disabled={isProcessing}>

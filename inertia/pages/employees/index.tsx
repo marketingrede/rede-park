@@ -236,7 +236,7 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
   }, [employees, sortField, sortOrder])
 
   const totalPages = Math.ceil(employees.length / itemsPerPage)
-  
+
   const paginatedEmployees = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return sortedEmployees.slice(start, start + itemsPerPage)
@@ -266,14 +266,17 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
   const [selectedIds, setSelectedIds] = useState<number[]>([])
 
   const isAllSelected =
-    paginatedEmployees.length > 0 &&
-    paginatedEmployees.every((e) => selectedIds.includes(e.id))
+    paginatedEmployees.length > 0 && paginatedEmployees.every((e) => selectedIds.includes(e.id))
 
   const handleSelectAll = () => {
     if (isAllSelected) {
-      setSelectedIds((prev) => prev.filter((id) => !paginatedEmployees.map((e) => e.id).includes(id)))
+      setSelectedIds((prev) =>
+        prev.filter((id) => !paginatedEmployees.map((e) => e.id).includes(id))
+      )
     } else {
-      setSelectedIds((prev) => Array.from(new Set([...prev, ...paginatedEmployees.map((e) => e.id)])))
+      setSelectedIds((prev) =>
+        Array.from(new Set([...prev, ...paginatedEmployees.map((e) => e.id)]))
+      )
     }
   }
 
@@ -534,7 +537,11 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
                 {getPageNumbers().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                      <span
+                        key={`ellipsis-${index}`}
+                        className="pagination-info"
+                        style={{ minWidth: 'auto' }}
+                      >
                         ...
                       </span>
                     )

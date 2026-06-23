@@ -32,6 +32,7 @@ const loggerConfig = defineConfig({
 
       /**
        * Configure where logs are written.
+       * In production, use JSON format for structured logging.
        */
       transport: {
         targets: [targets.file({ destination: 1 })],

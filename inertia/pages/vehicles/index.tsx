@@ -136,7 +136,7 @@ export default function VehiclesIndex({ filters, vehicles, employees }: PageProp
   }
 
   const totalPages = Math.ceil(vehicles.length / itemsPerPage)
-  
+
   const paginatedVehicles = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return vehicles.slice(start, start + itemsPerPage)
@@ -293,7 +293,11 @@ export default function VehiclesIndex({ filters, vehicles, employees }: PageProp
                 {getPageNumbers().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                      <span
+                        key={`ellipsis-${index}`}
+                        className="pagination-info"
+                        style={{ minWidth: 'auto' }}
+                      >
                         ...
                       </span>
                     )

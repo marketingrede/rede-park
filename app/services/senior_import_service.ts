@@ -1,7 +1,12 @@
 import Employee from '#models/employee'
 import SeniorImport from '#models/senior_import'
 import Vehicle from '#models/vehicle'
-import { makeSeniorSourceKey, normalizeSearchText, normalizePhone, normalizePlate } from '#services/normalization_service'
+import {
+  makeSeniorSourceKey,
+  normalizeSearchText,
+  normalizePhone,
+  normalizePlate,
+} from '#services/normalization_service'
 import { parse as parseCsv } from 'csv-parse/sync'
 import { DateTime } from 'luxon'
 import { readFile } from 'node:fs/promises'
@@ -202,7 +207,15 @@ function makeSeniorEmployeeInput(row: Record<string, unknown>): SeniorEmployeeIn
     ])
   )
   const roleName = asTrimmedString(
-    getHeaderValue(parsedRow, ['Cargo', 'cargo', 'roleName', 'Função', 'função', 'Funcao', 'funcao'])
+    getHeaderValue(parsedRow, [
+      'Cargo',
+      'cargo',
+      'roleName',
+      'Função',
+      'função',
+      'Funcao',
+      'funcao',
+    ])
   )
   const companyName = asTrimmedString(
     getHeaderValue(parsedRow, ['Empresa', 'empresa', 'companyName', 'Unidade', 'unidade'])
@@ -389,14 +402,18 @@ export default class SeniorImportService {
               existingEmployee.costCenterCode !== employeeData.costCenterCode ||
               existingEmployee.costCenterDescription !== employeeData.costCenterDescription ||
               existingEmployee.roleName !== employeeData.roleName ||
-              (employeeData.companyName && existingEmployee.companyName !== employeeData.companyName) ||
+              (employeeData.companyName &&
+                existingEmployee.companyName !== employeeData.companyName) ||
               existingEmployee.status !== 'active'
 
             if (hasChanged) {
               toUpdate.push({ model: existingEmployee, data: employeeData })
             } else {
               if (existingEmployee.seniorImportId !== importRecord.id) {
-                toUpdate.push({ model: existingEmployee, data: { seniorImportId: importRecord.id } })
+                toUpdate.push({
+                  model: existingEmployee,
+                  data: { seniorImportId: importRecord.id },
+                })
               } else {
                 updatedCount += 1
               }
@@ -522,7 +539,13 @@ export default class SeniorImportService {
 
         try {
           const fullName = asTrimmedString(
-            getHeaderValue(record, ['Nome', 'colaborador', 'Colaborador', 'Nome Completo', 'fullName'])
+            getHeaderValue(record, [
+              'Nome',
+              'colaborador',
+              'Colaborador',
+              'Nome Completo',
+              'fullName',
+            ])
           )
           if (!fullName) {
             skippedCount += 1
@@ -540,7 +563,14 @@ export default class SeniorImportService {
 
           let employeePhoneToUpdate: string | null = null
           const phoneInput = asTrimmedString(
-            getHeaderValue(record, ['Telefone', 'Celular', 'Contato', 'Celular1', 'Celular2', 'phone'])
+            getHeaderValue(record, [
+              'Telefone',
+              'Celular',
+              'Contato',
+              'Celular1',
+              'Celular2',
+              'phone',
+            ])
           )
           if (phoneInput) {
             const normalizedPhoneVal = normalizePhone(phoneInput)
@@ -572,7 +602,7 @@ export default class SeniorImportService {
               let year: number | null = null
               if (yearVal !== null && yearVal !== undefined) {
                 const parsedYear = Number(yearVal)
-                if (!isNaN(parsedYear) && parsedYear >= 1900 && parsedYear <= 2100) {
+                if (!Number.isNaN(parsedYear) && parsedYear >= 1900 && parsedYear <= 2100) {
                   year = parsedYear
                 }
               }
@@ -627,7 +657,8 @@ export default class SeniorImportService {
                       model: model ?? existingVehicle.model,
                       color: color ?? existingVehicle.color,
                       year: year ?? existingVehicle.year,
-                      vehicleType: vehicleType !== 'car' ? vehicleType : existingVehicle.vehicleType,
+                      vehicleType:
+                        vehicleType !== 'car' ? vehicleType : existingVehicle.vehicleType,
                       status: 'active' as const,
                     },
                   })

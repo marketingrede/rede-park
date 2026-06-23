@@ -32,14 +32,14 @@
 
   /* Tipografia */
   --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-size-xs: 0.6875rem;   /* 11px */
-  --font-size-sm: 0.75rem;     /* 12px */
-  --font-size-base: 0.875rem;  /* 14px */
-  --font-size-md: 0.9375rem;   /* 15px */
-  --font-size-lg: 1rem;        /* 16px */
-  --font-size-xl: 1.25rem;     /* 20px */
-  --font-size-2xl: 1.5rem;     /* 24px */
-  --font-size-3xl: 1.875rem;   /* 30px */
+  --font-size-xs: 0.6875rem; /* 11px */
+  --font-size-sm: 0.75rem; /* 12px */
+  --font-size-base: 0.875rem; /* 14px */
+  --font-size-md: 0.9375rem; /* 15px */
+  --font-size-lg: 1rem; /* 16px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 1.875rem; /* 30px */
 
   /* Espaçamento */
   --spacing-xs: 4px;
@@ -453,8 +453,6 @@ summary:focus-visible,
 .operations-toolbar button {
   height: 44px;
 }
-
-
 
 /* Busca proeminente para operação */
 .search-prominent {
@@ -923,7 +921,9 @@ tr:last-child td {
   color: var(--text-secondary);
   border: none;
   gap: 6px;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .employee-card-footer button:hover {
@@ -966,7 +966,6 @@ tr:last-child td {
   background: var(--surface-soft);
   user-select: none;
 }
-
 
 .employee-list-item {
   display: grid;
@@ -1081,7 +1080,7 @@ tr:last-child td {
   transform: none;
 }
 
-.view-toggle-button[data-active="true"] {
+.view-toggle-button[data-active='true'] {
   background: var(--accent-soft);
   color: var(--accent);
 }
@@ -1152,7 +1151,7 @@ tr:last-child td {
   border-color: var(--border-strong);
 }
 
-.pagination button[data-active="true"] {
+.pagination button[data-active='true'] {
   background: var(--accent);
   color: #fff;
   border-color: var(--accent);
@@ -1189,7 +1188,7 @@ tr:last-child td {
   background: var(--surface-soft);
 }
 
-.photo-upload-field input[type="file"] {
+.photo-upload-field input[type='file'] {
   flex: 1;
 }
 
@@ -1236,7 +1235,9 @@ tr:last-child td {
   cursor: pointer;
   list-style: none;
   border-radius: var(--radius-xl);
-  transition: color var(--transition-fast), background var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
   user-select: none;
 }
 
@@ -1528,7 +1529,7 @@ tr:last-child td {
   margin-top: var(--spacing-md);
 }
 
-.auth-card button[type="submit"] {
+.auth-card button[type='submit'] {
   width: 100%;
   margin-top: var(--spacing-xl);
   min-height: 42px;
@@ -1598,7 +1599,7 @@ tr:last-child td {
   margin-bottom: var(--spacing-md);
 }
 
-.upload-area input[type="file"] {
+.upload-area input[type='file'] {
   border: none;
   background: none;
   height: auto;
@@ -1606,7 +1607,7 @@ tr:last-child td {
   margin-top: var(--spacing-md);
 }
 
-.upload-area input[type="file"]:focus {
+.upload-area input[type='file']:focus {
   box-shadow: none;
 }
 
@@ -1645,8 +1646,12 @@ tr:last-child td {
    =================================================================== */
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -1804,7 +1809,9 @@ tr:last-child td {
     width: 22px;
     height: 22px;
     color: var(--muted);
-    transition: transform var(--transition-fast), color var(--transition-fast);
+    transition:
+      transform var(--transition-fast),
+      color var(--transition-fast);
   }
 
   .mobile-nav-link.active {
@@ -1854,7 +1861,8 @@ tr:last-child td {
     z-index: 1000;
     transform: translateY(100%);
     transition: transform var(--transition-slow);
-    padding: var(--spacing-lg) var(--spacing-xl) calc(var(--spacing-xl) + env(safe-area-inset-bottom, 0px));
+    padding: var(--spacing-lg) var(--spacing-xl)
+      calc(var(--spacing-xl) + env(safe-area-inset-bottom, 0px));
     box-shadow: var(--shadow-lg);
     max-height: 85vh;
     overflow-y: auto;
@@ -1933,10 +1941,14 @@ tr:last-child td {
     font-size: var(--font-size-xs);
     font-weight: 600;
     text-align: center;
-    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    transition:
+      background var(--transition-fast),
+      border-color var(--transition-fast),
+      color var(--transition-fast);
   }
 
-  .drawer-menu-item:hover, .drawer-menu-item.active {
+  .drawer-menu-item:hover,
+  .drawer-menu-item.active {
     background: var(--accent-soft);
     border-color: var(--accent-border);
     color: var(--accent);
@@ -1949,7 +1961,8 @@ tr:last-child td {
     transition: color var(--transition-fast);
   }
 
-  .drawer-menu-item:hover svg, .drawer-menu-item.active svg {
+  .drawer-menu-item:hover svg,
+  .drawer-menu-item.active svg {
     color: var(--accent);
   }
 
@@ -2021,7 +2034,9 @@ tr:last-child td {
    Loading Overlay & Spinners
    =================================================================== */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-overlay {
@@ -2063,4 +2078,3 @@ tr:last-child td {
   color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
-

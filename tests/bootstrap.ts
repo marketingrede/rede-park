@@ -7,6 +7,13 @@ import testUtils from '@adonisjs/core/services/test_utils'
 import { browserClient } from '@japa/browser-client'
 import { authBrowserClient } from '@adonisjs/auth/plugins/browser_client'
 import { sessionBrowserClient } from '@adonisjs/session/plugins/browser_client'
+import { apiClient, type ApiClient } from '@japa/api-client'
+
+declare module '@japa/core' {
+  interface TestContext {
+    http: ApiClient
+  }
+}
 
 /**
  * This file is imported by the "bin/test.ts" entrypoint file
@@ -20,6 +27,7 @@ export const plugins: Config['plugins'] = [
   assert(),
   pluginAdonisJS(app),
   dbAssertions(app),
+  apiClient(),
   browserClient({ runInSuites: ['browser'] }),
   sessionBrowserClient(app),
   authBrowserClient(app),

@@ -183,7 +183,13 @@ function DetailLine({ icon, label, value }: { icon: ReactNode; label: string; va
   )
 }
 
-export default function OperationIndex({ csrfToken, queryText, employees, visitors, pastVisitors }: PageProps) {
+export default function OperationIndex({
+  csrfToken,
+  queryText,
+  employees,
+  visitors,
+  pastVisitors,
+}: PageProps) {
   const [searchText, setSearchText] = useState(queryText)
   const [selectedCompany, setSelectedCompany] = useState('all')
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeCard | null>(null)
@@ -223,15 +229,17 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
   }, [])
 
   const handleExitVisitor = (id: number) => {
-    router.post(`/visitantes/${id}/saida`, {}, {
-      preserveState: true,
-    })
+    router.post(
+      `/visitantes/${id}/saida`,
+      {},
+      {
+        preserveState: true,
+      }
+    )
   }
 
   const companies = useMemo(() => {
-    const list = employees
-      .map((e) => e.companyName)
-      .filter(Boolean) as string[]
+    const list = employees.map((e) => e.companyName).filter(Boolean) as string[]
     return Array.from(new Set(list)).sort()
   }, [employees])
 
@@ -589,12 +597,17 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
                           </div>
                           {employee.vehicles.length > 0 && (
                             <div className="small muted" style={{ marginTop: 8 }}>
-                              {employee.vehicles.map((vehicle) => vehicleLabel(vehicle)).join(' | ')}
+                              {employee.vehicles
+                                .map((vehicle) => vehicleLabel(vehicle))
+                                .join(' | ')}
                             </div>
                           )}
                         </div>
 
-                        <div className="employee-card-footer" onClick={(event) => event.stopPropagation()}>
+                        <div
+                          className="employee-card-footer"
+                          onClick={(event) => event.stopPropagation()}
+                        >
                           <button
                             className="secondary compact"
                             type="button"
@@ -684,7 +697,10 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
                           )}
                         </div>
 
-                        <div className="employee-list-actions" onClick={(event) => event.stopPropagation()}>
+                        <div
+                          className="employee-list-actions"
+                          onClick={(event) => event.stopPropagation()}
+                        >
                           <button
                             className="secondary compact"
                             type="button"
@@ -738,7 +754,11 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
                       {getPageNumbers().map((page, index) => {
                         if (page === '...') {
                           return (
-                            <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                            <span
+                              key={`ellipsis-${index}`}
+                              className="pagination-info"
+                              style={{ minWidth: 'auto' }}
+                            >
                               ...
                             </span>
                           )
@@ -780,19 +800,25 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
               </p>
             </div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <button 
-                type="button" 
-                className="compact" 
+              <button
+                type="button"
+                className="compact"
                 onClick={() => setIsVisitorModalOpen(true)}
                 style={{ height: '32px', minHeight: 'auto', fontSize: '11px', gap: '4px' }}
               >
                 <Plus size={12} />
                 Novo
               </button>
-              <Link 
-                className="button secondary compact" 
-                href="/visitantes" 
-                style={{ height: '32px', minHeight: 'auto', fontSize: '11px', display: 'flex', alignItems: 'center' }}
+              <Link
+                className="button secondary compact"
+                href="/visitantes"
+                style={{
+                  height: '32px',
+                  minHeight: 'auto',
+                  fontSize: '11px',
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
               >
                 Gerenciar
               </Link>
@@ -817,20 +843,36 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
                         <IdentificationCard size={14} weight="duotone" />
                         {visitor.cpf}
                       </span>
-                      <span className="chip" style={{ background: 'var(--warning-soft)', color: 'var(--warning)', borderColor: 'var(--warning-soft)', fontWeight: 600 }}>
+                      <span
+                        className="chip"
+                        style={{
+                          background: 'var(--warning-soft)',
+                          color: 'var(--warning)',
+                          borderColor: 'var(--warning-soft)',
+                          fontWeight: 600,
+                        }}
+                      >
                         ⏱️ {elapsed}
                       </span>
                     </div>
-                    <span className="small muted">Entrada: {formatDateTime(visitor.enteredAt)}</span>
+                    <span className="small muted">
+                      Entrada: {formatDateTime(visitor.enteredAt)}
+                    </span>
                     {visitor.visitReason && (
                       <span className="small muted">Motivo: {visitor.visitReason}</span>
                     )}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
-                      <button 
-                        type="button" 
-                        className="secondary compact" 
+                      <button
+                        type="button"
+                        className="secondary compact"
                         onClick={() => handleExitVisitor(visitor.id)}
-                        style={{ fontSize: '11px', height: '28px', minHeight: 'auto', width: '100%', gap: '4px' }}
+                        style={{
+                          fontSize: '11px',
+                          height: '28px',
+                          minHeight: 'auto',
+                          width: '100%',
+                          gap: '4px',
+                        }}
                       >
                         <DoorOpen size={14} />
                         Dar Baixa

@@ -3,7 +3,9 @@ import Vehicle from '#models/vehicle'
 import { employeeValidator } from '#validators/redepark'
 import { normalizeDigits, normalizeSearchText } from '#services/normalization_service'
 import { storeUploadedImage } from '#services/upload_storage_service'
+import { auditLog } from '#services/audit_service'
 import type { HttpContext } from '@adonisjs/core/http'
+import db from '@adonisjs/lucid/services/db'
 
 export default class EmployeesController {
   async index({ request, inertia }: HttpContext) {
@@ -51,12 +53,12 @@ export default class EmployeesController {
     )
   }
 
-  async store({ request, response, session }: HttpContext) {
+  async store({ request, auth, response, session }: HttpContext) {
     const payload = await request.validateUsing(employeeValidator)
     const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
     const photoPath = await storeUploadedImage(photo, 'employees')
 
-    await Employee.create({
+    const employee = await Employee.create({
       ...payload,
       normalizedName: normalizeSearchText(payload.fullName),
       phone: payload.phone ? normalizeDigits(payload.phone) : null,
@@ -65,15 +67,26 @@ export default class EmployeesController {
       status: payload.status ?? 'active',
     })
 
+    await auditLog({
+      user: auth.user,
+      action: 'create',
+      entityType: 'employee',
+      entityId: employee.id,
+      newValues: { fullName: employee.fullName, companyName: employee.companyName },
+      ip: request.ip(),
+    })
+
     session.flash('success', 'Colaborador cadastrado.')
     return response.redirect().toPath('/colaboradores')
   }
 
-  async update({ params, request, response, session }: HttpContext) {
+  async update({ params, request, auth, response, session }: HttpContext) {
     const employee = await Employee.findOrFail(params.id)
     const payload = await request.validateUsing(employeeValidator)
     const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
     const photoPath = await storeUploadedImage(photo, 'employees')
+
+    const oldValues = { fullName: employee.fullName, companyName: employee.companyName }
 
     employee.merge({
       ...payload,
@@ -85,25 +98,42 @@ export default class EmployeesController {
     })
     await employee.save()
 
+    await auditLog({
+      user: auth.user,
+      action: 'update',
+      entityType: 'employee',
+      entityId: employee.id,
+      oldValues,
+      newValues: { fullName: employee.fullName, companyName: employee.companyName },
+      ip: request.ip(),
+    })
+
     session.flash('success', 'Colaborador atualizado.')
     return response.redirect().toPath('/colaboradores')
   }
 
-  async bulkDestroy({ request, response, session }: HttpContext) {
+  async bulkDestroy({ request, auth, response, session }: HttpContext) {
     const ids = request.input('ids', []) as number[]
     if (!Array.isArray(ids) || ids.length === 0) {
       session.flash('error', 'Selecione pelo menos um colaborador para excluir.')
       return response.redirect().back()
     }
 
-    let deletedCount = 0
-    for (const id of ids) {
-      const employee = await Employee.find(id)
-      if (employee) {
+    const deletedCount = await db.transaction(async (trx) => {
+      const employees = await Employee.query({ client: trx }).whereIn('id', ids)
+      for (const employee of employees) {
         await employee.delete()
-        deletedCount++
       }
-    }
+      return employees.length
+    })
+
+    await auditLog({
+      user: auth.user,
+      action: 'bulk_delete',
+      entityType: 'employee',
+      newValues: { ids },
+      ip: request.ip(),
+    })
 
     session.flash('success', `${deletedCount} colaborador(es) excluído(s) com sucesso.`)
     return response.redirect().toPath('/colaboradores')

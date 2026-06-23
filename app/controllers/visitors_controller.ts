@@ -5,6 +5,7 @@ import {
   normalizePlate,
   normalizeSearchText,
 } from '#services/normalization_service'
+import { auditLog } from '#services/audit_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 
@@ -63,10 +64,10 @@ export default class VisitorsController {
     )
   }
 
-  async store({ request, response, session }: HttpContext) {
+  async store({ request, auth, response, session }: HttpContext) {
     const payload = await request.validateUsing(visitorValidator)
 
-    await Visitor.create({
+    const visitor = await Visitor.create({
       ...payload,
       normalizedName: normalizeSearchText(payload.fullName),
       normalizedCpf: normalizeDigits(payload.cpf),
@@ -75,14 +76,31 @@ export default class VisitorsController {
       enteredAt: DateTime.now(),
     })
 
+    await auditLog({
+      user: auth.user,
+      action: 'create',
+      entityType: 'visitor',
+      entityId: visitor.id,
+      newValues: { fullName: visitor.fullName, cpf: visitor.cpf },
+      ip: request.ip(),
+    })
+
     session.flash('success', 'Visitante registrado.')
     return response.redirect().back()
   }
 
-  async exit({ params, response, session }: HttpContext) {
+  async exit({ params, request, auth, response, session }: HttpContext) {
     const visitor = await Visitor.findOrFail(params.id)
     visitor.exitedAt = DateTime.now()
     await visitor.save()
+
+    await auditLog({
+      user: auth.user,
+      action: 'exit',
+      entityType: 'visitor',
+      entityId: visitor.id,
+      ip: request.ip(),
+    })
 
     session.flash('success', 'Saída registrada.')
     return response.redirect().back()

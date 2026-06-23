@@ -1,5 +1,4 @@
 import Employee from '#models/employee'
-import Vehicle from '#models/vehicle'
 import Visitor from '#models/visitor'
 import { formatPlate, normalizeSearchText, normalizePlate } from '#services/normalization_service'
 import { buildVehicleContactMessage } from '#services/whatsapp_link_service'
@@ -11,7 +10,9 @@ export default class OperationsController {
     const cleanQ = normalizeSearchText(q)
     const plateQ = normalizePlate(q)
 
-    let employeesQuery = Employee.query().where('status', 'active')
+    let employeesQuery = Employee.query()
+      .where('status', 'active')
+      .preload('vehicles', (vq) => vq.where('status', 'active').orderBy('license_plate', 'asc'))
 
     if (cleanQ) {
       employeesQuery = employeesQuery.where((builder) => {
@@ -29,22 +30,12 @@ export default class OperationsController {
       })
     }
 
-    const employees = await employeesQuery
-      .orderBy('full_name', 'asc')
-      .limit(50)
-
-    const employeeIds = employees.map((e) => e.id)
-    const vehicles = employeeIds.length > 0
-      ? await Vehicle.query()
-          .where('status', 'active')
-          .whereIn('employee_id', employeeIds)
-          .orderBy('license_plate', 'asc')
-      : []
+    const employees = await employeesQuery.orderBy('full_name', 'asc').limit(50)
 
     const visitors = await Visitor.query()
       .whereNull('exited_at')
       .orderBy('entered_at', 'desc')
-      .limit(500)
+      .limit(100)
 
     const allPast = await Visitor.query()
       .select([
@@ -71,22 +62,12 @@ export default class OperationsController {
     }
     const pastVisitors = Array.from(uniquePastMap.values())
 
-    const vehiclesByEmployee = new Map<number, Vehicle[]>()
-    for (const vehicle of vehicles) {
-      if (!vehicle.employeeId) {
-        continue
-      }
-      const currentVehicles = vehiclesByEmployee.get(vehicle.employeeId) ?? []
-      currentVehicles.push(vehicle)
-      vehiclesByEmployee.set(vehicle.employeeId, currentVehicles)
-    }
-
     return inertia.render(
       'operations/index' as never,
       {
         queryText: request.input('q', ''),
         employees: employees.map((employee) => {
-          const employeeVehicles = vehiclesByEmployee.get(employee.id) ?? []
+          const employeeVehicles = employee.vehicles ?? []
           const primaryVehicle = employeeVehicles[0]
           return {
             ...employee.serialize(),

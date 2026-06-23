@@ -1,11 +1,21 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const targetFile = path.join(__dirname, '..', 'node_modules', '@adonisjs', 'lucid', 'build', 'src', 'clients', 'libsql.cjs');
+const targetFile = path.join(
+  __dirname,
+  '..',
+  'node_modules',
+  '@adonisjs',
+  'lucid',
+  'build',
+  'src',
+  'clients',
+  'libsql.cjs'
+)
 
 const replacementContent = `"use strict";
 const Sqlite3Client = require('knex/lib/dialects/sqlite3/index.js');
@@ -92,15 +102,15 @@ module.exports = class LibSQLClient extends Sqlite3Client {
     return 'libsql';
   }
 };
-`;
+`
 
 try {
   if (fs.existsSync(targetFile)) {
-    fs.writeFileSync(targetFile, replacementContent, 'utf8');
-    console.log('[PATCH] successfully replaced native libsql client with HTTP client wrapper!');
+    fs.writeFileSync(targetFile, replacementContent, 'utf8')
+    console.log('[PATCH] successfully replaced native libsql client with HTTP client wrapper!')
   } else {
-    console.warn('[PATCH] target file not found:', targetFile);
+    console.warn('[PATCH] target file not found:', targetFile)
   }
 } catch (err) {
-  console.error('[PATCH] failed to patch target file:', err);
+  console.error('[PATCH] failed to patch target file:', err)
 }

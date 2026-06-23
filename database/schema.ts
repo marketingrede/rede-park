@@ -8,7 +8,30 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class ApprovalRequestSchema extends BaseModel {
-  static $columns = ['alternatePhone', 'birthDate', 'companyName', 'cpf', 'createdAt', 'email', 'employeeId', 'fullName', 'id', 'normalizedCpf', 'phone', 'photoPath', 'rejectionReason', 'roleName', 'status', 'updatedAt', 'vehicleColor', 'vehicleManufacturer', 'vehicleModel', 'vehiclePlate', 'vehicleType', 'vehicleYear'] as const
+  static $columns = [
+    'alternatePhone',
+    'birthDate',
+    'companyName',
+    'cpf',
+    'createdAt',
+    'email',
+    'employeeId',
+    'fullName',
+    'id',
+    'normalizedCpf',
+    'phone',
+    'photoPath',
+    'rejectionReason',
+    'roleName',
+    'status',
+    'updatedAt',
+    'vehicleColor',
+    'vehicleManufacturer',
+    'vehicleModel',
+    'vehiclePlate',
+    'vehicleType',
+    'vehicleYear',
+  ] as const
   $columns = ApprovalRequestSchema.$columns
   @column()
   declare alternatePhone: string | null
@@ -74,7 +97,18 @@ export class CompanySchema extends BaseModel {
 }
 
 export class ContactAttemptSchema extends BaseModel {
-  static $columns = ['createdAt', 'employeeId', 'id', 'message', 'status', 'targetPhone', 'updatedAt', 'userId', 'visitorId', 'whatsappUrl'] as const
+  static $columns = [
+    'createdAt',
+    'employeeId',
+    'id',
+    'message',
+    'status',
+    'targetPhone',
+    'updatedAt',
+    'userId',
+    'visitorId',
+    'whatsappUrl',
+  ] as const
   $columns = ContactAttemptSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -99,7 +133,30 @@ export class ContactAttemptSchema extends BaseModel {
 }
 
 export class EmployeeSchema extends BaseModel {
-  static $columns = ['alternatePhone', 'birthDate', 'companyId', 'companyName', 'costCenterCode', 'costCenterDescription', 'cpf', 'createdAt', 'email', 'fullName', 'id', 'normalizedCpf', 'normalizedName', 'notes', 'phone', 'photoPath', 'roleName', 'seniorImportId', 'seniorRaw', 'seniorSourceKey', 'status', 'updatedAt'] as const
+  static $columns = [
+    'alternatePhone',
+    'birthDate',
+    'companyId',
+    'companyName',
+    'costCenterCode',
+    'costCenterDescription',
+    'cpf',
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'normalizedCpf',
+    'normalizedName',
+    'notes',
+    'phone',
+    'photoPath',
+    'roleName',
+    'seniorImportId',
+    'seniorRaw',
+    'seniorSourceKey',
+    'status',
+    'updatedAt',
+  ] as const
   $columns = EmployeeSchema.$columns
   @column()
   declare alternatePhone: string | null
@@ -148,7 +205,24 @@ export class EmployeeSchema extends BaseModel {
 }
 
 export class SeniorImportSchema extends BaseModel {
-  static $columns = ['createdAt', 'detectedHeaderRow', 'errorCount', 'errorsJson', 'finishedAt', 'id', 'importedCount', 'skippedCount', 'sourceFileName', 'sourcePath', 'sourceType', 'startedAt', 'status', 'totalRows', 'updatedAt', 'updatedCount'] as const
+  static $columns = [
+    'createdAt',
+    'detectedHeaderRow',
+    'errorCount',
+    'errorsJson',
+    'finishedAt',
+    'id',
+    'importedCount',
+    'skippedCount',
+    'sourceFileName',
+    'sourcePath',
+    'sourceType',
+    'startedAt',
+    'status',
+    'totalRows',
+    'updatedAt',
+    'updatedCount',
+  ] as const
   $columns = SeniorImportSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -185,7 +259,16 @@ export class SeniorImportSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'role', 'status', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'fullName',
+    'id',
+    'password',
+    'role',
+    'status',
+    'updatedAt',
+  ] as const
   $columns = UserSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -206,7 +289,22 @@ export class UserSchema extends BaseModel {
 }
 
 export class VehicleSchema extends BaseModel {
-  static $columns = ['color', 'createdAt', 'employeeId', 'id', 'licensePlate', 'manufacturer', 'model', 'normalizedPlate', 'notes', 'photoPath', 'status', 'updatedAt', 'vehicleType', 'year'] as const
+  static $columns = [
+    'color',
+    'createdAt',
+    'employeeId',
+    'id',
+    'licensePlate',
+    'manufacturer',
+    'model',
+    'normalizedPlate',
+    'notes',
+    'photoPath',
+    'status',
+    'updatedAt',
+    'vehicleType',
+    'year',
+  ] as const
   $columns = VehicleSchema.$columns
   @column()
   declare color: string | null
@@ -239,7 +337,26 @@ export class VehicleSchema extends BaseModel {
 }
 
 export class VisitorSchema extends BaseModel {
-  static $columns = ['companyName', 'cpf', 'createdAt', 'enteredAt', 'exitedAt', 'fullName', 'id', 'licensePlate', 'manufacturer', 'model', 'normalizedCpf', 'normalizedName', 'normalizedPlate', 'notes', 'updatedAt', 'vehicleType', 'visitReason', 'year'] as const
+  static $columns = [
+    'companyName',
+    'cpf',
+    'createdAt',
+    'enteredAt',
+    'exitedAt',
+    'fullName',
+    'id',
+    'licensePlate',
+    'manufacturer',
+    'model',
+    'normalizedCpf',
+    'normalizedName',
+    'normalizedPlate',
+    'notes',
+    'updatedAt',
+    'vehicleType',
+    'visitReason',
+    'year',
+  ] as const
   $columns = VisitorSchema.$columns
   @column()
   declare companyName: string | null

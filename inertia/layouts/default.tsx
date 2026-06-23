@@ -83,13 +83,13 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
     )
   }
 
-  const mainItems = navigationItems.slice(0, 2).filter((item) =>
-    (item.roles as readonly string[]).includes(user.role)
-  )
+  const mainItems = navigationItems
+    .slice(0, 2)
+    .filter((item) => (item.roles as readonly string[]).includes(user.role))
 
-  const adminItems = navigationItems.slice(2).filter((item) =>
-    (item.roles as readonly string[]).includes(user.role)
-  )
+  const adminItems = navigationItems
+    .slice(2)
+    .filter((item) => (item.roles as readonly string[]).includes(user.role))
 
   return (
     <div className="app-shell">
@@ -107,7 +107,11 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
       {/* Desktop Sidebar */}
       <aside className="sidebar" aria-label="Navegação principal">
         <Link className="brand" href="/operacao">
-          <img src="/logo-rede-trilha.svg" alt="Rede Park" style={{ width: '80px', height: 'auto', objectFit: 'contain' }} />
+          <img
+            src="/logo-rede-trilha.svg"
+            alt="Rede Park"
+            style={{ width: '80px', height: 'auto', objectFit: 'contain' }}
+          />
           <span>Rede Park</span>
         </Link>
 
@@ -175,29 +179,54 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
 
       {/* Mobile Bottom Navigation Bar */}
       <nav className="mobile-bottom-nav" aria-label="Navegação inferior">
-        <Link className={`mobile-nav-link${pathName === '/operacao' ? ' active' : ''}`} href="/operacao">
+        <Link
+          className={`mobile-nav-link${pathName === '/operacao' ? ' active' : ''}`}
+          href="/operacao"
+        >
           <AddressBook size={20} weight={pathName === '/operacao' ? 'fill' : 'regular'} />
           <span>Operação</span>
         </Link>
-        <Link className={`mobile-nav-link${pathName === '/visitantes' ? ' active' : ''}`} href="/visitantes">
+        <Link
+          className={`mobile-nav-link${pathName === '/visitantes' ? ' active' : ''}`}
+          href="/visitantes"
+        >
           <IdentificationBadge size={20} weight={pathName === '/visitantes' ? 'fill' : 'regular'} />
           <span>Visitantes</span>
         </Link>
         {user.role === 'admin' && (
-          <Link className={`mobile-nav-link${pathName === '/usuarios/aprovacoes' ? ' active' : ''}`} href="/usuarios/aprovacoes">
-            <ClipboardText size={20} weight={pathName === '/usuarios/aprovacoes' ? 'fill' : 'regular'} />
+          <Link
+            className={`mobile-nav-link${pathName === '/usuarios/aprovacoes' ? ' active' : ''}`}
+            href="/usuarios/aprovacoes"
+          >
+            <ClipboardText
+              size={20}
+              weight={pathName === '/usuarios/aprovacoes' ? 'fill' : 'regular'}
+            />
             <span>Aprovações</span>
           </Link>
         )}
-        <button type="button" className={`mobile-nav-link${isMoreOpen ? ' active' : ''}`} onClick={() => setIsMoreOpen(true)}>
+        <button
+          type="button"
+          className={`mobile-nav-link${isMoreOpen ? ' active' : ''}`}
+          onClick={() => setIsMoreOpen(true)}
+        >
           <List size={20} weight={isMoreOpen ? 'fill' : 'regular'} />
           <span>Mais</span>
         </button>
       </nav>
 
       {/* Mobile More Drawer Sheet */}
-      <div className={`mobile-drawer-overlay${isMoreOpen ? ' open' : ''}`} onClick={() => setIsMoreOpen(false)} aria-hidden="true" />
-      <section className={`mobile-drawer-content${isMoreOpen ? ' open' : ''}`} role="dialog" aria-modal="true" aria-label="Menu Administrativo">
+      <div
+        className={`mobile-drawer-overlay${isMoreOpen ? ' open' : ''}`}
+        onClick={() => setIsMoreOpen(false)}
+        aria-hidden="true"
+      />
+      <section
+        className={`mobile-drawer-content${isMoreOpen ? ' open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu Administrativo"
+      >
         <div className="drawer-handle" aria-hidden="true" />
         <header className="drawer-header">
           <div className="drawer-user-info">
@@ -209,7 +238,12 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
               <span>{user.role === 'admin' ? 'Administrador' : 'Operador'}</span>
             </div>
           </div>
-          <button type="button" className="icon-button" onClick={() => setIsMoreOpen(false)} aria-label="Fechar menu">
+          <button
+            type="button"
+            className="icon-button"
+            onClick={() => setIsMoreOpen(false)}
+            aria-label="Fechar menu"
+          >
             <X size={18} />
           </button>
         </header>
@@ -217,23 +251,38 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
         <div className="drawer-menu-grid">
           {user.role === 'admin' && (
             <>
-              <Link className={`drawer-menu-item${pathName === '/dashboard' ? ' active' : ''}`} href="/dashboard">
+              <Link
+                className={`drawer-menu-item${pathName === '/dashboard' ? ' active' : ''}`}
+                href="/dashboard"
+              >
                 <ChartBar size={24} weight="duotone" />
                 <span>Dashboard</span>
               </Link>
-              <Link className={`drawer-menu-item${pathName === '/colaboradores' ? ' active' : ''}`} href="/colaboradores">
+              <Link
+                className={`drawer-menu-item${pathName === '/colaboradores' ? ' active' : ''}`}
+                href="/colaboradores"
+              >
                 <Users size={24} weight="duotone" />
                 <span>Colaboradores</span>
               </Link>
-              <Link className={`drawer-menu-item${pathName === '/veiculos' ? ' active' : ''}`} href="/veiculos">
+              <Link
+                className={`drawer-menu-item${pathName === '/veiculos' ? ' active' : ''}`}
+                href="/veiculos"
+              >
                 <Car size={24} weight="duotone" />
                 <span>Veículos</span>
               </Link>
-              <Link className={`drawer-menu-item${pathName === '/importacoes' ? ' active' : ''}`} href="/importacoes">
+              <Link
+                className={`drawer-menu-item${pathName === '/importacoes' ? ' active' : ''}`}
+                href="/importacoes"
+              >
                 <UploadSimple size={24} weight="duotone" />
                 <span>Importações</span>
               </Link>
-              <Link className={`drawer-menu-item${pathName === '/usuarios' ? ' active' : ''}`} href="/usuarios">
+              <Link
+                className={`drawer-menu-item${pathName === '/usuarios' ? ' active' : ''}`}
+                href="/usuarios"
+              >
                 <UserGear size={24} weight="duotone" />
                 <span>Usuários</span>
               </Link>

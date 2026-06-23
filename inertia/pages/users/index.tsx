@@ -78,7 +78,7 @@ export default function UsersIndex({ users }: PageProps) {
   }
 
   const totalPages = Math.ceil(users.length / itemsPerPage)
-  
+
   const paginatedUsers = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return users.slice(start, start + itemsPerPage)
@@ -207,7 +207,11 @@ export default function UsersIndex({ users }: PageProps) {
                 {getPageNumbers().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                      <span
+                        key={`ellipsis-${index}`}
+                        className="pagination-info"
+                        style={{ minWidth: 'auto' }}
+                      >
                         ...
                       </span>
                     )

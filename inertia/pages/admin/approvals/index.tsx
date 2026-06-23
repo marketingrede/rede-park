@@ -1,14 +1,7 @@
 import { useState } from 'react'
 import { Head, router } from '@inertiajs/react'
 import { toast } from 'sonner'
-import {
-  Check,
-  X,
-  User,
-  Car,
-  Camera,
-  Eye
-} from '@phosphor-icons/react'
+import { Check, X, User, Car, Camera, Eye } from '@phosphor-icons/react'
 import { formatDate, formatPhone, formatPlate } from '~/lib/format'
 
 type Employee = {
@@ -37,7 +30,7 @@ type ApprovalRequest = {
   photoPath: string | null
   companyName: string | null
   roleName: string | null
-  
+
   // Vehicle details
   vehiclePlate: string | null
   vehicleManufacturer: string | null
@@ -63,7 +56,11 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
   const [processing, setProcessing] = useState(false)
 
   const handleApprove = (id: number) => {
-    if (!confirm('Deseja realmente aprovar esta solicitação? Os dados do colaborador serão atualizados imediatamente.')) {
+    if (
+      !confirm(
+        'Deseja realmente aprovar esta solicitação? Os dados do colaborador serão atualizados imediatamente.'
+      )
+    ) {
       return
     }
 
@@ -79,7 +76,7 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
         onError: (errors: any) => {
           toast.error(errors.message || 'Erro ao aprovar solicitação.')
         },
-        onFinish: () => setProcessing(false)
+        onFinish: () => setProcessing(false),
       }
     )
   }
@@ -102,21 +99,32 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
         onError: (errors: any) => {
           toast.error(errors.message || 'Erro ao rejeitar solicitação.')
         },
-        onFinish: () => setProcessing(false)
+        onFinish: () => setProcessing(false),
       }
     )
   }
 
   // Helper to highlight changes in a diff view
-  const renderDiff = (current: string | null | undefined, updated: string | null | undefined, label: string) => {
-    const isDifferent = current !== updated && updated !== undefined && updated !== null && updated !== '';
+  const renderDiff = (
+    current: string | null | undefined,
+    updated: string | null | undefined,
+    label: string
+  ) => {
+    const isDifferent =
+      current !== updated && updated !== undefined && updated !== null && updated !== ''
     return (
-      <div className="detail-line" style={{ borderLeft: isDifferent ? '3px solid var(--success)' : '1px solid var(--border)' }}>
+      <div
+        className="detail-line"
+        style={{ borderLeft: isDifferent ? '3px solid var(--success)' : '1px solid var(--border)' }}
+      >
         <div style={{ flex: 1 }}>
           <span className="small muted">{label}</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px' }}>
             {current && isDifferent && (
-              <span className="small muted" style={{ textDecoration: 'line-through', color: 'var(--danger)' }}>
+              <span
+                className="small muted"
+                style={{ textDecoration: 'line-through', color: 'var(--danger)' }}
+              >
                 {current}
               </span>
             )}
@@ -132,7 +140,7 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
   return (
     <>
       <Head title="Aprovações Pendentes | Rede Park" />
-      
+
       <header className="topbar">
         <div className="page-title">
           <h1>Fila de Aprovações</h1>
@@ -143,9 +151,15 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
       <section className="panel">
         {approvals.length === 0 ? (
           <div className="empty-state">
-            <Check size={48} weight="duotone" style={{ color: 'var(--success)', marginBottom: '1rem' }} />
+            <Check
+              size={48}
+              weight="duotone"
+              style={{ color: 'var(--success)', marginBottom: '1rem' }}
+            />
             <p>Nenhuma solicitação pendente no momento.</p>
-            <span className="small muted">Todos os dados de colaboradores e veículos estão em dia.</span>
+            <span className="small muted">
+              Todos os dados de colaboradores e veículos estão em dia.
+            </span>
           </div>
         ) : (
           <div className="table-panel">
@@ -173,12 +187,17 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                         )}
                         <div>
                           <strong>{approval.fullName}</strong>
-                          <span className="small muted">{approval.roleName || 'Cargo não informado'}</span>
+                          <span className="small muted">
+                            {approval.roleName || 'Cargo não informado'}
+                          </span>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <span className={`status ${approval.employeeId ? 'warning' : 'success'}`} style={{ textTransform: 'capitalize' }}>
+                      <span
+                        className={`status ${approval.employeeId ? 'warning' : 'success'}`}
+                        style={{ textTransform: 'capitalize' }}
+                      >
                         {approval.employeeId ? 'Atualização' : 'Novo Cadastro'}
                       </span>
                     </td>
@@ -189,7 +208,12 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                     </td>
                     <td>
                       <div>{formatDate(approval.createdAt)}</div>
-                      <div className="small muted">{new Date(approval.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</div>
+                      <div className="small muted">
+                        {new Date(approval.createdAt).toLocaleTimeString('pt-BR', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '8px' }}>
@@ -235,8 +259,8 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
               <div>
                 <h2 id="review-title">Revisar Solicitação</h2>
                 <p>
-                  {selectedApproval.employeeId 
-                    ? `Atualização de cadastro para o colaborador ID #${selectedApproval.employeeId}` 
+                  {selectedApproval.employeeId
+                    ? `Atualização de cadastro para o colaborador ID #${selectedApproval.employeeId}`
                     : 'Solicitação de novo cadastro de colaborador'}
                 </p>
               </div>
@@ -251,27 +275,92 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
             </header>
 
             <div className="modal-body stack" style={{ padding: '24px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-                
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                  gap: '24px',
+                }}
+              >
                 {/* Profile photos comparison */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
                     <Camera size={18} />
                     Foto de Perfil
                   </h3>
-                  <div style={{ display: 'flex', gap: '24px', alignItems: 'center', justifyContent: 'center', padding: '16px', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', background: 'var(--surface-soft)' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '24px',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '16px',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-lg)',
+                      background: 'var(--surface-soft)',
+                    }}
+                  >
                     {selectedApproval.employee?.photoPath && (
                       <div style={{ textAlign: 'center' }}>
-                        <span className="small muted" style={{ display: 'block', marginBottom: '8px' }}>Atual</span>
-                        <img src={selectedApproval.employee.photoPath} alt="Foto atual" style={{ width: '96px', height: '96px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', border: '1px solid var(--border)' }} />
+                        <span
+                          className="small muted"
+                          style={{ display: 'block', marginBottom: '8px' }}
+                        >
+                          Atual
+                        </span>
+                        <img
+                          src={selectedApproval.employee.photoPath}
+                          alt="Foto atual"
+                          style={{
+                            width: '96px',
+                            height: '96px',
+                            borderRadius: 'var(--radius-lg)',
+                            objectFit: 'cover',
+                            border: '1px solid var(--border)',
+                          }}
+                        />
                       </div>
                     )}
                     <div style={{ textAlign: 'center' }}>
-                      <span className="small muted" style={{ display: 'block', marginBottom: '8px' }}>Proposta</span>
+                      <span
+                        className="small muted"
+                        style={{ display: 'block', marginBottom: '8px' }}
+                      >
+                        Proposta
+                      </span>
                       {selectedApproval.photoPath ? (
-                        <img src={selectedApproval.photoPath} alt="Nova foto" style={{ width: '96px', height: '96px', borderRadius: 'var(--radius-lg)', objectFit: 'cover', border: '2px solid var(--success)' }} />
+                        <img
+                          src={selectedApproval.photoPath}
+                          alt="Nova foto"
+                          style={{
+                            width: '96px',
+                            height: '96px',
+                            borderRadius: 'var(--radius-lg)',
+                            objectFit: 'cover',
+                            border: '2px solid var(--success)',
+                          }}
+                        />
                       ) : (
-                        <div style={{ width: '96px', height: '96px', borderRadius: 'var(--radius-lg)', border: '1px dashed var(--border)', display: 'grid', placeItems: 'center', color: 'var(--muted)', background: 'var(--surface)' }}>
+                        <div
+                          style={{
+                            width: '96px',
+                            height: '96px',
+                            borderRadius: 'var(--radius-lg)',
+                            border: '1px dashed var(--border)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            color: 'var(--muted)',
+                            background: 'var(--surface)',
+                          }}
+                        >
                           Sem Foto
                         </div>
                       )}
@@ -281,44 +370,92 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
 
                 {/* Personal & company data diffs */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <h3
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                    }}
+                  >
                     <User size={18} />
                     Informações Pessoais / Empresa
                   </h3>
                   <div className="stack" style={{ gap: '12px' }}>
-                    {renderDiff(selectedApproval.employee?.fullName, selectedApproval.fullName, 'Nome Completo')}
+                    {renderDiff(
+                      selectedApproval.employee?.fullName,
+                      selectedApproval.fullName,
+                      'Nome Completo'
+                    )}
                     {renderDiff(selectedApproval.employee?.cpf, selectedApproval.cpf, 'CPF')}
                     {renderDiff(
-                      selectedApproval.employee?.birthDate ? formatDate(selectedApproval.employee.birthDate) : null,
+                      selectedApproval.employee?.birthDate
+                        ? formatDate(selectedApproval.employee.birthDate)
+                        : null,
                       selectedApproval.birthDate ? formatDate(selectedApproval.birthDate) : null,
                       'Data de Nascimento'
                     )}
                     {renderDiff(
-                      selectedApproval.employee?.phone ? formatPhone(selectedApproval.employee.phone) : null,
+                      selectedApproval.employee?.phone
+                        ? formatPhone(selectedApproval.employee.phone)
+                        : null,
                       selectedApproval.phone ? formatPhone(selectedApproval.phone) : null,
                       'Telefone'
                     )}
                     {renderDiff(
-                      selectedApproval.employee?.alternatePhone ? formatPhone(selectedApproval.employee.alternatePhone) : null,
-                      selectedApproval.alternatePhone ? formatPhone(selectedApproval.alternatePhone) : null,
+                      selectedApproval.employee?.alternatePhone
+                        ? formatPhone(selectedApproval.employee.alternatePhone)
+                        : null,
+                      selectedApproval.alternatePhone
+                        ? formatPhone(selectedApproval.alternatePhone)
+                        : null,
                       'Telefone Alternativo'
                     )}
                     {renderDiff(selectedApproval.employee?.email, selectedApproval.email, 'E-mail')}
-                    {renderDiff(selectedApproval.employee?.companyName, selectedApproval.companyName, 'Empresa')}
-                    {renderDiff(selectedApproval.employee?.roleName, selectedApproval.roleName, 'Cargo')}
+                    {renderDiff(
+                      selectedApproval.employee?.companyName,
+                      selectedApproval.companyName,
+                      'Empresa'
+                    )}
+                    {renderDiff(
+                      selectedApproval.employee?.roleName,
+                      selectedApproval.roleName,
+                      'Cargo'
+                    )}
                   </div>
                 </div>
-
               </div>
 
               {/* Vehicle details */}
               {selectedApproval.vehiclePlate && (
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', marginTop: '12px' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <div
+                  style={{
+                    borderTop: '1px solid var(--border)',
+                    paddingTop: '24px',
+                    marginTop: '12px',
+                  }}
+                >
+                  <h3
+                    style={{
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      marginBottom: '16px',
+                    }}
+                  >
                     <Car size={18} />
                     Dados do Veículo Proposto
                   </h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                      gap: '16px',
+                    }}
+                  >
                     <div className="detail-line">
                       <div>
                         <span className="small muted">Placa</span>
@@ -365,7 +502,14 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
               )}
 
               {/* Action buttons */}
-              <div className="modal-actions" style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', marginTop: '16px' }}>
+              <div
+                className="modal-actions"
+                style={{
+                  borderTop: '1px solid var(--border)',
+                  paddingTop: '20px',
+                  marginTop: '16px',
+                }}
+              >
                 <button
                   type="button"
                   className="danger"
@@ -398,7 +542,11 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
 
       {/* Rejection Modal */}
       {rejectingApproval && (
-        <div className="modal-backdrop" style={{ zIndex: 50 }} onClick={() => setRejectingApproval(null)}>
+        <div
+          className="modal-backdrop"
+          style={{ zIndex: 50 }}
+          onClick={() => setRejectingApproval(null)}
+        >
           <section
             className="modal-card"
             role="dialog"
@@ -409,8 +557,13 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
           >
             <header className="modal-header">
               <div>
-                <h2 id="reject-title" style={{ color: 'var(--danger)' }}>Rejeitar Solicitação</h2>
-                <p>Explique o motivo pelo qual o cadastro de {rejectingApproval.fullName} está sendo recusado.</p>
+                <h2 id="reject-title" style={{ color: 'var(--danger)' }}>
+                  Rejeitar Solicitação
+                </h2>
+                <p>
+                  Explique o motivo pelo qual o cadastro de {rejectingApproval.fullName} está sendo
+                  recusado.
+                </p>
               </div>
               <button
                 type="button"
@@ -436,7 +589,16 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                   />
                 </div>
               </div>
-              <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', padding: '16px 24px', borderTop: '1px solid var(--border)' }}>
+              <div
+                className="modal-footer"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '8px',
+                  padding: '16px 24px',
+                  borderTop: '1px solid var(--border)',
+                }}
+              >
                 <button
                   type="button"
                   className="secondary"
@@ -444,11 +606,7 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                 >
                   Cancelar
                 </button>
-                <button
-                  type="submit"
-                  className="danger"
-                  disabled={processing}
-                >
+                <button type="submit" className="danger" disabled={processing}>
                   Confirmar Rejeição
                 </button>
               </div>

@@ -7,7 +7,11 @@ export default function Signup() {
       <section className="auth-card" aria-labelledby="signup-title">
         <div className="auth-brand">
           <span className="brand-mark" aria-hidden="true">
-            <img src="/logo-rede-trilha.svg" alt="" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+            <img
+              src="/logo-rede-trilha.svg"
+              alt=""
+              style={{ width: 32, height: 32, objectFit: 'contain' }}
+            />
           </span>
           <span>Rede Park</span>
         </div>

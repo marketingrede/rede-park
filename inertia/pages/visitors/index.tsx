@@ -46,7 +46,7 @@ export default function VisitorsIndex({ filters, visitors, pastVisitors }: PageP
   }
 
   const totalPages = Math.ceil(visitors.length / itemsPerPage)
-  
+
   const paginatedVisitors = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage
     return visitors.slice(start, start + itemsPerPage)
@@ -194,7 +194,11 @@ export default function VisitorsIndex({ filters, visitors, pastVisitors }: PageP
                 {getPageNumbers().map((page, index) => {
                   if (page === '...') {
                     return (
-                      <span key={`ellipsis-${index}`} className="pagination-info" style={{ minWidth: 'auto' }}>
+                      <span
+                        key={`ellipsis-${index}`}
+                        className="pagination-info"
+                        style={{ minWidth: 'auto' }}
+                      >
                         ...
                       </span>
                     )

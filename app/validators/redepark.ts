@@ -47,7 +47,14 @@ export const visitorValidator = vine.create({
 export const userManagementValidator = vine.create({
   fullName: requiredText(180),
   email: vine.string().trim().email().maxLength(254),
-  password: vine.string().minLength(8).maxLength(32).optional(),
+  password: vine
+    .string()
+    .minLength(8)
+    .maxLength(32)
+    .regex(/[A-Z]/)
+    .regex(/[a-z]/)
+    .regex(/[0-9]/)
+    .optional(),
   role: vine.enum(['admin', 'operator']),
   status: vine.enum(['active', 'inactive']),
 })
