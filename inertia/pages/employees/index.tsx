@@ -32,7 +32,7 @@ type Vehicle = {
 }
 
 type PageProps = InertiaProps<{
-  filters: { q: string; status: string; company?: string }
+  filters: { q: string; status: string; company?: string; birthDate?: string }
   employees: Employee[]
   vehicles: Vehicle[]
   companies: string[]
@@ -151,6 +151,7 @@ function EmployeeFields({ employee }: { employee?: Employee }) {
 }
 
 export default function EmployeesIndex({ filters, employees, vehicles, companies }: PageProps) {
+  const [isCreatingEmployee, setIsCreatingEmployee] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null)
 
   const handleFilterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -159,7 +160,8 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
     const q = formData.get('q') as string
     const status = formData.get('status') as string
     const company = formData.get('company') as string
-    router.get('/colaboradores', { q, status, company }, { preserveState: true })
+    const birthDate = formData.get('birthDate') as string
+    router.get('/colaboradores', { q, status, company, birthDate }, { preserveState: true })
   }
 
   const [sortField, setSortField] = useState<string>(() => {
@@ -311,39 +313,25 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
           <h1>Colaboradores</h1>
           <p>Cadastro vindo do Senior, contatos e foto.</p>
         </div>
-        <button
-          type="button"
-          className="secondary"
-          onClick={() => {
-            const url = `${window.location.origin}/cadastro-colaborador`
-            navigator.clipboard.writeText(url)
-            toast.success('Link de cadastro copiado para a área de transferência!')
-          }}
-        >
-          <LinkSimple size={16} />
-          Copiar Link de Cadastro
-        </button>
-      </header>
-
-      <details className="collapsible-section">
-        <summary>
-          <Plus size={16} />
-          Novo colaborador — ajuste manual fora da importação Senior
-        </summary>
-        <div className="collapsible-body">
-          <Form action={{ url: '/colaboradores', method: 'post' }}>
-            {({ processing }) => (
-              <>
-                <EmployeeFields />
-                <button type="submit" disabled={processing} style={{ marginTop: 16 }}>
-                  <Plus size={18} />
-                  Salvar colaborador
-                </button>
-              </>
-            )}
-          </Form>
+        <div className="topbar-actions">
+          <button type="button" onClick={() => setIsCreatingEmployee(true)}>
+            <Plus size={16} />
+            Novo colaborador
+          </button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              const url = `${window.location.origin}/cadastro-colaborador`
+              navigator.clipboard.writeText(url)
+              toast.success('Link de cadastro copiado para a área de transferência!')
+            }}
+          >
+            <LinkSimple size={16} />
+            Copiar Link de Cadastro
+          </button>
         </div>
-      </details>
+      </header>
 
       <section className="panel">
         <form className="toolbar" onSubmit={handleFilterSubmit}>
@@ -374,6 +362,15 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
                 </option>
               ))}
             </select>
+          </div>
+          <div className="field">
+            <label htmlFor="employee-birthdate">Nascimento</label>
+            <input
+              type="date"
+              id="employee-birthdate"
+              name="birthDate"
+              defaultValue={filters.birthDate || ''}
+            />
           </div>
           <button type="submit">
             <MagnifyingGlass size={18} />
@@ -569,6 +566,55 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
           </div>
         )}
       </section>
+
+      {isCreatingEmployee && (
+        <div className="modal-backdrop" onClick={() => setIsCreatingEmployee(false)}>
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-employee-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="new-employee-title">Novo colaborador</h2>
+                <p>Ajuste manual fora da importação Senior.</p>
+              </div>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Fechar"
+                onClick={() => setIsCreatingEmployee(false)}
+              >
+                <X size={18} />
+              </button>
+            </header>
+            <div className="modal-body">
+              <Form action={{ url: '/colaboradores', method: 'post' }}>
+                {({ processing }) => (
+                  <>
+                    <EmployeeFields />
+                    <div className="modal-actions">
+                      <button type="submit" disabled={processing}>
+                        <Plus size={18} />
+                        Salvar colaborador
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => setIsCreatingEmployee(false)}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                )}
+              </Form>
+            </div>
+          </section>
+        </div>
+      )}
 
       {editingEmployee && (
         <div className="modal-backdrop" onClick={() => setEditingEmployee(null)}>

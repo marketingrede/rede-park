@@ -11,10 +11,12 @@ export default class EmployeesController {
     const queryText = normalizeSearchText(request.input('q', ''))
     const status = String(request.input('status', 'active'))
     const company = String(request.input('company', 'all'))
+    const birthDate = String(request.input('birthDate', ''))
 
     const employees = await Employee.query()
       .if(status !== 'all', (query) => query.where('status', status))
       .if(company !== 'all', (query) => query.where('company_name', company))
+      .if(birthDate.length > 0, (query) => query.where('birth_date', birthDate))
       .if(queryText.length > 0, (query) => {
         query.where((builder) => {
           builder
@@ -44,7 +46,7 @@ export default class EmployeesController {
     return inertia.render(
       'employees/index' as never,
       {
-        filters: { q: request.input('q', ''), status, company },
+        filters: { q: request.input('q', ''), status, company, birthDate },
         employees,
         vehicles,
         companies,
