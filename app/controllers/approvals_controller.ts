@@ -5,7 +5,6 @@ import Vehicle from '#models/vehicle'
 import { normalizeSearchText } from '#services/normalization_service'
 import { getWritableStoragePath } from '#services/upload_storage_service'
 import { auditLog } from '#services/audit_service'
-import db from '@adonisjs/lucid/services/db'
 import { unlink } from 'node:fs/promises'
 
 export default class ApprovalsController {
@@ -25,7 +24,8 @@ export default class ApprovalsController {
       return response.redirect().back()
     }
 
-    await db.transaction(async () => {
+    const db = await import('@adonisjs/lucid/services/db')
+    await db.default.transaction(async () => {
       let employee: Employee
 
       if (approvalRequest.employeeId) {

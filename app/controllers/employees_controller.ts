@@ -5,7 +5,6 @@ import { normalizeDigits, normalizeSearchText } from '#services/normalization_se
 import { storeUploadedImage } from '#services/upload_storage_service'
 import { auditLog } from '#services/audit_service'
 import type { HttpContext } from '@adonisjs/core/http'
-import db from '@adonisjs/lucid/services/db'
 
 export default class EmployeesController {
   async index({ request, inertia }: HttpContext) {
@@ -119,7 +118,8 @@ export default class EmployeesController {
       return response.redirect().back()
     }
 
-    const deletedCount = await db.transaction(async (trx) => {
+    const db = await import('@adonisjs/lucid/services/db')
+    const deletedCount = await db.default.transaction(async (trx) => {
       const employees = await Employee.query({ client: trx }).whereIn('id', ids)
       for (const employee of employees) {
         await employee.delete()

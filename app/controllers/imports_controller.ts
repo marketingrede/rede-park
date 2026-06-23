@@ -3,7 +3,6 @@ import SeniorImport from '#models/senior_import'
 import SeniorImportService from '#services/senior_import_service'
 import { getWritableStoragePath } from '#services/upload_storage_service'
 import type { HttpContext } from '@adonisjs/core/http'
-import db from '@adonisjs/lucid/services/db'
 import { randomUUID } from 'node:crypto'
 import { mkdir, unlink } from 'node:fs/promises'
 import path from 'node:path'
@@ -102,7 +101,8 @@ export default class ImportsController {
       return response.redirect().back()
     }
 
-    const deletedCount = await db.transaction(async (trx) => {
+    const db = await import('@adonisjs/lucid/services/db')
+    const deletedCount = await db.default.transaction(async (trx) => {
       const records = await SeniorImport.query({ client: trx }).whereIn('id', ids)
 
       for (const record of records) {
