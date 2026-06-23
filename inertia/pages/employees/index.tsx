@@ -1,9 +1,10 @@
 import type { InertiaProps } from '~/types'
 import { Form } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
-import { Camera, MagnifyingGlass, PencilSimple, Plus, X } from '@phosphor-icons/react'
+import { Camera, MagnifyingGlass, PencilSimple, Plus, X, LinkSimple } from '@phosphor-icons/react'
 import { useEffect, useMemo, useState } from 'react'
 import { formatDate, formatPhone, formatPlate, makeInitials } from '~/lib/format'
+import { toast } from 'sonner'
 
 type Employee = {
   id: number
@@ -307,6 +308,18 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
           <h1>Colaboradores</h1>
           <p>Cadastro vindo do Senior, contatos e foto.</p>
         </div>
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => {
+            const url = `${window.location.origin}/cadastro-colaborador`
+            navigator.clipboard.writeText(url)
+            toast.success('Link de cadastro copiado para a área de transferência!')
+          }}
+        >
+          <LinkSimple size={16} />
+          Copiar Link de Cadastro
+        </button>
       </header>
 
       <details className="collapsible-section">
