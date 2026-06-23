@@ -1689,22 +1689,273 @@ tr:last-child td {
    Responsive
    =================================================================== */
 
+/* Base styles for mobile elements (hidden on desktop) */
+.mobile-top-bar,
+.mobile-bottom-nav,
+.mobile-drawer-overlay,
+.mobile-drawer-content {
+  display: none;
+}
+
 @media (max-width: 1020px) {
   .app-shell {
-    grid-template-columns: 1fr;
+    display: block;
+    min-height: 100dvh;
   }
 
   .sidebar {
-    position: static;
-    height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    display: none !important;
   }
 
   .metrics-grid,
   .grid-two,
   .cards-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Mobile Top Bar (sticky header) */
+  .mobile-top-bar {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    z-index: 900;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-lg);
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.02);
+  }
+
+  .mobile-top-bar .brand-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-weight: 800;
+    font-size: var(--font-size-lg);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .mobile-top-bar .brand-title img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .mobile-top-bar .profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-full);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--accent-border);
+  }
+
+  /* Mobile Bottom Navigation */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border);
+    z-index: 900;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 -2px 12px rgba(15, 23, 42, 0.04);
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 10px;
+    font-weight: 600;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    transition: color var(--transition-fast);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .mobile-nav-link svg {
+    width: 22px;
+    height: 22px;
+    color: var(--muted);
+    transition: transform var(--transition-fast), color var(--transition-fast);
+  }
+
+  .mobile-nav-link.active {
+    color: var(--accent);
+  }
+
+  .mobile-nav-link.active svg {
+    color: var(--accent);
+    transform: scale(1.08);
+  }
+
+  /* App Content layout offsets */
+  .app-content {
+    padding-top: calc(56px + var(--spacing-md));
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px) + var(--spacing-md));
+  }
+
+  /* Drawer Overlay (Blur backdrop) */
+  .mobile-drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 950;
+    opacity: 0;
+    transition: opacity var(--transition-base);
+    pointer-events: none;
+  }
+
+  .mobile-drawer-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Drawer Content Container */
+  .mobile-drawer-content {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    z-index: 1000;
+    transform: translateY(100%);
+    transition: transform var(--transition-slow);
+    padding: var(--spacing-lg) var(--spacing-xl) calc(var(--spacing-xl) + env(safe-area-inset-bottom, 0px));
+    box-shadow: var(--shadow-lg);
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+
+  .mobile-drawer-content.open {
+    transform: translateY(0);
+  }
+
+  /* Slider Pill */
+  .drawer-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--border-strong);
+    border-radius: var(--radius-full);
+    margin: 0 auto var(--spacing-md) auto;
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .drawer-user-info {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .drawer-user-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-full);
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: var(--font-size-md);
+    display: grid;
+    place-items: center;
+  }
+
+  .drawer-user-meta strong {
+    display: block;
+    font-size: var(--font-size-md);
+    color: var(--text);
+  }
+
+  .drawer-user-meta span {
+    font-size: var(--font-size-xs);
+    color: var(--muted);
+  }
+
+  /* Drawer Admin Menu Grid */
+  .drawer-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .drawer-menu-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-xs);
+    background: var(--surface-soft);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-align: center;
+    transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .drawer-menu-item:hover, .drawer-menu-item.active {
+    background: var(--accent-soft);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .drawer-menu-item svg {
+    width: 24px;
+    height: 24px;
+    color: var(--muted);
+    transition: color var(--transition-fast);
+  }
+
+  .drawer-menu-item:hover svg, .drawer-menu-item.active svg {
+    color: var(--accent);
+  }
+
+  .drawer-logout-btn {
+    margin-top: var(--spacing-xl);
+    width: 100%;
   }
 }
 
