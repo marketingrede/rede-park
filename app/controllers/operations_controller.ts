@@ -81,7 +81,7 @@ export default class OperationsController {
             }),
           }
         }),
-        visitors,
+        visitors: visitors.map((v) => v.serialize()),
         pastVisitors,
       } as never
     )
