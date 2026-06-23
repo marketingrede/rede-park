@@ -3,8 +3,8 @@ import ApprovalRequest from '#models/approval_request'
 import Employee from '#models/employee'
 import Vehicle from '#models/vehicle'
 import { normalizeSearchText } from '#services/normalization_service'
+import { getWritableStoragePath } from '#services/upload_storage_service'
 import { unlink } from 'node:fs/promises'
-import app from '@adonisjs/core/services/app'
 
 export default class ApprovalsController {
   async index({ inertia }: HttpContext) {
@@ -112,7 +112,7 @@ export default class ApprovalsController {
       try {
         const parts = approval.photoPath.split('/')
         const fileName = parts[parts.length - 1]
-        const filePath = app.makePath('storage', 'uploads', 'employees', fileName)
+        const filePath = getWritableStoragePath('uploads', 'employees', fileName)
         await unlink(filePath)
       } catch (err) {
         // Ignored if file doesn't exist

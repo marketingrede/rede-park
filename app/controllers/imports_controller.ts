@@ -1,7 +1,7 @@
 import Employee from '#models/employee'
 import SeniorImport from '#models/senior_import'
 import SeniorImportService from '#services/senior_import_service'
-import app from '@adonisjs/core/services/app'
+import { getWritableStoragePath } from '#services/upload_storage_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import { randomUUID } from 'node:crypto'
 import { mkdir, unlink } from 'node:fs/promises'
@@ -24,7 +24,7 @@ export default class ImportsController {
       return response.redirect().toPath('/importacoes')
     }
 
-    const uploadDirectory = app.makePath('storage', 'senior', 'uploads')
+    const uploadDirectory = getWritableStoragePath('senior', 'uploads')
     await mkdir(uploadDirectory, { recursive: true })
     const fileName = `${randomUUID()}-${seniorFile.clientName}`
     await seniorFile.move(uploadDirectory, { name: fileName, overwrite: false })
@@ -55,7 +55,7 @@ export default class ImportsController {
       return response.redirect().toPath('/importacoes')
     }
 
-    const uploadDirectory = app.makePath('storage', 'senior', 'uploads')
+    const uploadDirectory = getWritableStoragePath('senior', 'uploads')
     await mkdir(uploadDirectory, { recursive: true })
     const fileName = `${randomUUID()}-${auxiliaryFile.clientName}`
     await auxiliaryFile.move(uploadDirectory, { name: fileName, overwrite: false })

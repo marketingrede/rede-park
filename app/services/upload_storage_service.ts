@@ -2,8 +2,17 @@ import app from '@adonisjs/core/services/app'
 import { mkdir } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import type { MultipartFile } from '@adonisjs/bodyparser/types'
+import os from 'node:os'
+import path from 'node:path'
 
 const allowedScopes = new Set(['employees', 'vehicles'])
+
+export function getWritableStoragePath(...subPaths: string[]) {
+  if (process.env.VERCEL) {
+    return path.join(os.tmpdir(), 'redepark', ...subPaths)
+  }
+  return app.makePath('storage', ...subPaths)
+}
 
 export async function storeUploadedImage(
   file: MultipartFile | null,
@@ -15,7 +24,7 @@ export async function storeUploadedImage(
 
   const extension = file.extname ? `.${file.extname}` : ''
   const fileName = `${randomUUID()}${extension}`
-  const targetDirectory = app.makePath('storage', 'uploads', scope)
+  const targetDirectory = getWritableStoragePath('uploads', scope)
 
   await mkdir(targetDirectory, { recursive: true })
   await file.move(targetDirectory, { name: fileName, overwrite: false })
@@ -33,5 +42,5 @@ export function resolveStoredImagePath(scope: string, fileName: string) {
     return null
   }
 
-  return app.makePath('storage', 'uploads', scope, fileName)
+  return getWritableStoragePath('uploads', scope, fileName)
 }
