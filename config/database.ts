@@ -109,6 +109,11 @@ const dbConfig = defineConfig({
       connection: {
         filename: `${env.get('LIBSQL_URL') ?? ''}?authToken=${env.get('LIBSQL_AUTH_TOKEN') ?? ''}`,
       } as any,
+      pool: {
+        min: 0,
+        max: 1,
+        idleTimeoutMillis: 5000,
+      },
       useNullAsDefault: true,
       migrations: {
         naturalSort: true,

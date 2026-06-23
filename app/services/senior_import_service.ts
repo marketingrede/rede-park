@@ -140,27 +140,72 @@ function getHeaderValue(row: Record<string, unknown>, candidates: string[]) {
 
 function makeSeniorEmployeeInput(row: Record<string, unknown>): SeniorEmployeeInput | null {
   const parsedRow = jsonEmployeeSchema.parse(row)
-  const fullName = asTrimmedString(getHeaderValue(parsedRow, ['Nome', 'nome', 'fullName']))
+  const fullName = asTrimmedString(
+    getHeaderValue(parsedRow, [
+      'Nome',
+      'nome',
+      'fullName',
+      'Colaborador',
+      'colaborador',
+      'Funcionário',
+      'funcionario',
+      'Nome Completo',
+      'nome completo',
+    ])
+  )
   if (!fullName) {
     return null
   }
 
   const birthDate = parseBirthDate(
-    getHeaderValue(parsedRow, ['Nascimento', 'nascimento', 'birthDate'])
+    getHeaderValue(parsedRow, [
+      'Nascimento',
+      'nascimento',
+      'birthDate',
+      'Data de Nascimento',
+      'data de nascimento',
+      'Data',
+      'data',
+      'Dia',
+      'dia',
+      'Aniversário',
+      'aniversário',
+      'Aniversario',
+      'aniversario',
+      'D. Nasc.',
+      'd. nasc.',
+      'DT Nasc',
+      'dt nasc',
+      'Data Nasc',
+      'data nasc',
+      'Data nasc',
+    ])
   )
   const costCenterCode = asTrimmedString(
-    getHeaderValue(parsedRow, ['C.Custo', 'Custo', 'costCenterCode'])
+    getHeaderValue(parsedRow, [
+      'C.Custo',
+      'Custo',
+      'costCenterCode',
+      'Centro de Custo',
+      'centro de custo',
+    ])
   )
   const costCenterDescription = asTrimmedString(
     getHeaderValue(parsedRow, [
       'Descrição (C.Custo)',
       'Descricao (C.Custo)',
       'costCenterDescription',
+      'Descrição Centro de Custo',
+      'descrição centro de custo',
+      'Descrição C. Custo',
+      'descrição c. custo',
     ])
   )
-  const roleName = asTrimmedString(getHeaderValue(parsedRow, ['Cargo', 'cargo', 'roleName']))
+  const roleName = asTrimmedString(
+    getHeaderValue(parsedRow, ['Cargo', 'cargo', 'roleName', 'Função', 'função', 'Funcao', 'funcao'])
+  )
   const companyName = asTrimmedString(
-    getHeaderValue(parsedRow, ['Empresa', 'empresa', 'companyName'])
+    getHeaderValue(parsedRow, ['Empresa', 'empresa', 'companyName', 'Unidade', 'unidade'])
   )
 
   return {
@@ -177,7 +222,29 @@ function makeSeniorEmployeeInput(row: Record<string, unknown>): SeniorEmployeeIn
 function detectHeaderRow(rows: unknown[][]) {
   return rows.findIndex((row) => {
     const normalizedCells = row.map((cell) => normalizeSearchText(asTrimmedString(cell)))
-    return normalizedCells.includes('NOME') && normalizedCells.includes('NASCIMENTO')
+
+    const hasNameHeader = normalizedCells.some((cell) => {
+      return (
+        cell === 'NOME' ||
+        cell === 'COLABORADOR' ||
+        cell === 'FUNCIONARIO' ||
+        cell.includes('NOME COMPLETO')
+      )
+    })
+
+    const hasDateHeader = normalizedCells.some((cell) => {
+      return (
+        cell === 'NASCIMENTO' ||
+        cell === 'NASC' ||
+        cell === 'ANIVERSARIO' ||
+        cell === 'DATA' ||
+        cell.includes('NASC') ||
+        cell.includes('ANIV') ||
+        cell.includes('NASCIMENTO')
+      )
+    })
+
+    return hasNameHeader && hasDateHeader
   })
 }
 
@@ -264,11 +331,27 @@ export default class SeniorImportService {
     let totalRows = 0
 
     try {
+      console.log('[DEBUG importFile] Carregando registros da planilha...');
       const { records, headerRow } = await loadRecords(filePath, sourceType)
       totalRows = records.length
+      console.log(`[DEBUG importFile] Registros carregados: ${totalRows}. Linha do cabeçalho: ${headerRow}`);
       importRecord.detectedHeaderRow = headerRow
-      const seniorKeyOccurrences = new Map<string, number>()
 
+      console.log('[DEBUG importFile] Buscando colaboradores existentes no banco...');
+      const existingEmployees = await Employee.query()
+      console.log(`[DEBUG importFile] Colaboradores existentes carregados: ${existingEmployees.length}`);
+      const employeeMap = new Map<string, Employee>()
+      for (const emp of existingEmployees) {
+        if (emp.seniorSourceKey) {
+          employeeMap.set(emp.seniorSourceKey, emp)
+        }
+      }
+
+      const seniorKeyOccurrences = new Map<string, number>()
+      const toInsert: any[] = []
+      const toUpdate: { model: Employee; data: any }[] = []
+
+      console.log('[DEBUG importFile] Processando registros em memória...');
       for (const [index, record] of records.entries()) {
         const sourceLine = headerRow ? headerRow + index + 1 : index + 1
 
@@ -288,29 +371,10 @@ export default class SeniorImportService {
           seniorKeyOccurrences.set(baseSeniorSourceKey, occurrence)
           const seniorSourceKey =
             occurrence === 1 ? baseSeniorSourceKey : `${baseSeniorSourceKey}|COLISAO-${occurrence}`
-          const existingEmployee = await Employee.query()
-            .where('senior_source_key', seniorSourceKey)
-            .first()
 
-          if (existingEmployee) {
-            existingEmployee.merge({
-              fullName: employeeInput.fullName,
-              normalizedName: normalizeSearchText(employeeInput.fullName),
-              birthDate: employeeInput.birthDate ? DateTime.fromISO(employeeInput.birthDate) : null,
-              costCenterCode: employeeInput.costCenterCode,
-              costCenterDescription: employeeInput.costCenterDescription,
-              roleName: employeeInput.roleName,
-              companyName: employeeInput.companyName ?? existingEmployee.companyName,
-              seniorRaw: JSON.stringify(employeeInput.raw),
-              seniorImportId: importRecord.id,
-              status: 'active',
-            })
-            await existingEmployee.save()
-            updatedCount += 1
-            continue
-          }
+          const existingEmployee = employeeMap.get(seniorSourceKey)
 
-          await Employee.create({
+          const employeeData = {
             fullName: employeeInput.fullName,
             normalizedName: normalizeSearchText(employeeInput.fullName),
             birthDate: employeeInput.birthDate ? DateTime.fromISO(employeeInput.birthDate) : null,
@@ -318,18 +382,80 @@ export default class SeniorImportService {
             costCenterDescription: employeeInput.costCenterDescription,
             roleName: employeeInput.roleName,
             companyName: employeeInput.companyName,
-            seniorSourceKey,
             seniorRaw: JSON.stringify(employeeInput.raw),
             seniorImportId: importRecord.id,
-            status: 'active',
-          })
-          importedCount += 1
+            status: 'active' as const,
+          }
+
+          if (existingEmployee) {
+            const hasChanged =
+              existingEmployee.fullName !== employeeData.fullName ||
+              existingEmployee.birthDate?.toISODate() !== employeeData.birthDate?.toISODate() ||
+              existingEmployee.costCenterCode !== employeeData.costCenterCode ||
+              existingEmployee.costCenterDescription !== employeeData.costCenterDescription ||
+              existingEmployee.roleName !== employeeData.roleName ||
+              (employeeData.companyName && existingEmployee.companyName !== employeeData.companyName) ||
+              existingEmployee.status !== 'active'
+
+            if (hasChanged) {
+              toUpdate.push({ model: existingEmployee, data: employeeData })
+            } else {
+              if (existingEmployee.seniorImportId !== importRecord.id) {
+                toUpdate.push({ model: existingEmployee, data: { seniorImportId: importRecord.id } })
+              } else {
+                updatedCount += 1
+              }
+            }
+          } else {
+            toInsert.push({
+              ...employeeData,
+              seniorSourceKey,
+            })
+          }
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Erro desconhecido'
           errors.push(`Linha ${sourceLine}: ${message}`)
         }
       }
 
+      console.log(`[DEBUG importFile] Processamento em memória concluído. Para Inserir: ${toInsert.length}, Para Atualizar: ${toUpdate.length}`);
+
+      // Bulk insert new employees in batches
+      if (toInsert.length > 0) {
+        console.log(`[DEBUG importFile] Inserindo ${toInsert.length} novos colaboradores...`);
+        const batchSize = 100
+        for (let i = 0; i < toInsert.length; i += batchSize) {
+          const batch = toInsert.slice(i, i + batchSize)
+          await Employee.createMany(batch)
+          importedCount += batch.length
+        }
+        console.log('[DEBUG importFile] Novos colaboradores inseridos com sucesso.');
+      }
+
+      // Update existing employees in concurrent batches
+      if (toUpdate.length > 0) {
+        console.log(`[DEBUG importFile] Atualizando ${toUpdate.length} colaboradores existentes em lotes concorrentes...`);
+        const batchSize = 30
+        for (let i = 0; i < toUpdate.length; i += batchSize) {
+          const chunk = toUpdate.slice(i, i + batchSize)
+          console.log(`[DEBUG importFile] Enviando lote de atualização ${i} até ${i + chunk.length}...`);
+          await Promise.all(
+            chunk.map(async (item) => {
+              try {
+                item.model.merge(item.data)
+                await item.model.save()
+                updatedCount += 1
+              } catch (error) {
+                const message = error instanceof Error ? error.message : 'Erro desconhecido'
+                errors.push(`Erro ao atualizar colaborador "${item.model.fullName}": ${message}`)
+              }
+            })
+          )
+        }
+        console.log('[DEBUG importFile] Colaboradores existentes atualizados.');
+      }
+
+      console.log('[DEBUG importFile] Finalizando registro de importação no banco...');
       importRecord.merge({
         status: errors.length > 0 ? 'completed_with_errors' : 'completed',
         totalRows,
@@ -341,9 +467,9 @@ export default class SeniorImportService {
         finishedAt: DateTime.now(),
       })
       await importRecord.save()
+      console.log('[DEBUG importFile] Importação concluída com sucesso!');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro desconhecido'
-      errors.push(message)
+      console.error('[DEBUG importFile] Erro crítico no importFile:', error);
       importRecord.merge({
         status: 'failed',
         totalRows,
@@ -388,6 +514,23 @@ export default class SeniorImportService {
       totalRows = records.length
       importRecord.detectedHeaderRow = headerRow
 
+      // Fetch all employees and vehicles for in-memory lookup
+      const existingEmployees = await Employee.query()
+      const employeeMap = new Map<string, Employee>()
+      for (const emp of existingEmployees) {
+        employeeMap.set(emp.normalizedName, emp)
+      }
+
+      const existingVehicles = await Vehicle.query()
+      const vehicleMap = new Map<string, Vehicle>()
+      for (const veh of existingVehicles) {
+        vehicleMap.set(veh.normalizedPlate, veh)
+      }
+
+      const toUpdateEmployees: { model: Employee; data: any }[] = []
+      const toInsertVehicles: any[] = []
+      const toUpdateVehicles: { model: Vehicle; data: any }[] = []
+
       for (const [index, record] of records.entries()) {
         const sourceLine = headerRow ? headerRow + index + 1 : index + 1
 
@@ -401,7 +544,7 @@ export default class SeniorImportService {
           }
 
           const normalizedName = normalizeSearchText(fullName)
-          const employee = await Employee.query().where('normalized_name', normalizedName).first()
+          const employee = employeeMap.get(normalizedName)
 
           if (!employee) {
             errors.push(`Linha ${sourceLine}: Colaborador "${fullName}" não cadastrado no sistema.`)
@@ -409,18 +552,24 @@ export default class SeniorImportService {
             continue
           }
 
+          let employeePhoneToUpdate: string | null = null
           const phoneInput = asTrimmedString(
             getHeaderValue(record, ['Telefone', 'Celular', 'Contato', 'Celular1', 'Celular2', 'phone'])
           )
           if (phoneInput) {
             const normalizedPhoneVal = normalizePhone(phoneInput)
-            if (normalizedPhoneVal) {
-              employee.phone = normalizedPhoneVal
+            if (normalizedPhoneVal && employee.phone !== normalizedPhoneVal) {
+              employeePhoneToUpdate = normalizedPhoneVal
             }
           }
 
-          employee.seniorImportId = importRecord.id
-          await employee.save()
+          if (employeePhoneToUpdate || employee.seniorImportId !== importRecord.id) {
+            const updateData: any = { seniorImportId: importRecord.id }
+            if (employeePhoneToUpdate) {
+              updateData.phone = employeePhoneToUpdate
+            }
+            toUpdateEmployees.push({ model: employee, data: updateData })
+          }
 
           const licensePlate = asTrimmedString(
             getHeaderValue(record, ['Placa', 'Veículo Placa', 'Placa do Carro', 'licensePlate'])
@@ -471,24 +620,34 @@ export default class SeniorImportService {
                 vehicleType = 'van'
               }
 
-              const existingVehicle = await Vehicle.query()
-                .where('normalized_plate', normalizedPlateVal)
-                .first()
+              const existingVehicle = vehicleMap.get(normalizedPlateVal)
 
               if (existingVehicle) {
-                existingVehicle.merge({
-                  employeeId: employee.id,
-                  licensePlate: normalizedPlateVal,
-                  manufacturer: manufacturer ?? existingVehicle.manufacturer,
-                  model: model ?? existingVehicle.model,
-                  color: color ?? existingVehicle.color,
-                  year: year ?? existingVehicle.year,
-                  vehicleType: vehicleType !== 'car' ? vehicleType : existingVehicle.vehicleType,
-                  status: 'active',
-                })
-                await existingVehicle.save()
+                const hasChanged =
+                  existingVehicle.employeeId !== employee.id ||
+                  existingVehicle.manufacturer !== (manufacturer ?? existingVehicle.manufacturer) ||
+                  existingVehicle.model !== (model ?? existingVehicle.model) ||
+                  existingVehicle.color !== (color ?? existingVehicle.color) ||
+                  existingVehicle.year !== (year ?? existingVehicle.year) ||
+                  existingVehicle.status !== 'active'
+
+                if (hasChanged) {
+                  toUpdateVehicles.push({
+                    model: existingVehicle,
+                    data: {
+                      employeeId: employee.id,
+                      licensePlate: normalizedPlateVal,
+                      manufacturer: manufacturer ?? existingVehicle.manufacturer,
+                      model: model ?? existingVehicle.model,
+                      color: color ?? existingVehicle.color,
+                      year: year ?? existingVehicle.year,
+                      vehicleType: vehicleType !== 'car' ? vehicleType : existingVehicle.vehicleType,
+                      status: 'active' as const,
+                    },
+                  })
+                }
               } else {
-                await Vehicle.create({
+                toInsertVehicles.push({
                   employeeId: employee.id,
                   licensePlate: normalizedPlateVal,
                   normalizedPlate: normalizedPlateVal,
@@ -497,7 +656,7 @@ export default class SeniorImportService {
                   color,
                   year,
                   vehicleType,
-                  status: 'active',
+                  status: 'active' as const,
                 })
               }
             }
@@ -507,6 +666,43 @@ export default class SeniorImportService {
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Erro desconhecido'
           errors.push(`Linha ${sourceLine}: ${message}`)
+        }
+      }
+
+      // Execute employee updates
+      if (toUpdateEmployees.length > 0) {
+        const batchSize = 30
+        for (let i = 0; i < toUpdateEmployees.length; i += batchSize) {
+          const chunk = toUpdateEmployees.slice(i, i + batchSize)
+          await Promise.all(
+            chunk.map(async (item) => {
+              item.model.merge(item.data)
+              await item.model.save()
+            })
+          )
+        }
+      }
+
+      // Execute vehicle inserts
+      if (toInsertVehicles.length > 0) {
+        const batchSize = 100
+        for (let i = 0; i < toInsertVehicles.length; i += batchSize) {
+          const batch = toInsertVehicles.slice(i, i + batchSize)
+          await Vehicle.createMany(batch)
+        }
+      }
+
+      // Execute vehicle updates
+      if (toUpdateVehicles.length > 0) {
+        const batchSize = 30
+        for (let i = 0; i < toUpdateVehicles.length; i += batchSize) {
+          const chunk = toUpdateVehicles.slice(i, i + batchSize)
+          await Promise.all(
+            chunk.map(async (item) => {
+              item.model.merge(item.data)
+              await item.model.save()
+            })
+          )
         }
       }
 

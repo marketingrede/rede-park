@@ -193,6 +193,30 @@ export default function OperationIndex({ csrfToken, queryText, employees, visito
   const [isVisitorModalOpen, setIsVisitorModalOpen] = useState(false)
   const [now, setNow] = useState(new Date())
 
+  // Debounced search reload
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchText !== queryText) {
+        router.get(
+          '/operacao',
+          { q: searchText },
+          {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true,
+          }
+        )
+      }
+    }, 400)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchText, queryText])
+
+  // Sync prop queryText to searchText state
+  useEffect(() => {
+    setSearchText(queryText)
+  }, [queryText])
+
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 30000)
     return () => clearInterval(timer)

@@ -1,17 +1,45 @@
 import Employee from '#models/employee'
 import Vehicle from '#models/vehicle'
 import Visitor from '#models/visitor'
-import { formatPlate } from '#services/normalization_service'
+import { formatPlate, normalizeSearchText, normalizePlate } from '#services/normalization_service'
 import { buildVehicleContactMessage } from '#services/whatsapp_link_service'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class OperationsController {
   async index({ request, inertia }: HttpContext) {
-    const employees = await Employee.query()
-      .where('status', 'active')
+    const q = request.input('q', '').trim()
+    const cleanQ = normalizeSearchText(q)
+    const plateQ = normalizePlate(q)
+
+    let employeesQuery = Employee.query().where('status', 'active')
+
+    if (cleanQ) {
+      employeesQuery = employeesQuery.where((builder) => {
+        builder
+          .where('normalized_name', 'like', `%${cleanQ}%`)
+          .orWhere('role_name', 'like', `%${cleanQ}%`)
+          .orWhere('company_name', 'like', `%${cleanQ}%`)
+          .orWhereExists((subquery) => {
+            subquery
+              .from('vehicles')
+              .whereRaw('vehicles.employee_id = employees.id')
+              .where('vehicles.status', 'active')
+              .andWhere('vehicles.normalized_plate', 'like', `%${plateQ}%`)
+          })
+      })
+    }
+
+    const employees = await employeesQuery
       .orderBy('full_name', 'asc')
-      .limit(5000)
-    const vehicles = await Vehicle.query().where('status', 'active').orderBy('license_plate', 'asc')
+      .limit(50)
+
+    const employeeIds = employees.map((e) => e.id)
+    const vehicles = employeeIds.length > 0
+      ? await Vehicle.query()
+          .where('status', 'active')
+          .whereIn('employee_id', employeeIds)
+          .orderBy('license_plate', 'asc')
+      : []
 
     const visitors = await Visitor.query()
       .whereNull('exited_at')

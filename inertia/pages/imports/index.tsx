@@ -55,6 +55,19 @@ export default function ImportsIndex({ imports }: PageProps) {
   const auxiliaryFileRef = useRef<HTMLInputElement>(null)
   const [seniorFileName, setSeniorFileName] = useState<string | null>(null)
   const [auxiliaryFileName, setAuxiliaryFileName] = useState<string | null>(null)
+  const [activeImportForErrors, setActiveImportForErrors] = useState<ImportRecord | null>(null)
+  const [isProcessingGlobal, setIsProcessingGlobal] = useState(false)
+
+  useEffect(() => {
+    const unbindStart = router.on('start', () => setIsProcessingGlobal(true))
+    const unbindFinish = router.on('finish', () => setIsProcessingGlobal(false))
+
+    return () => {
+      unbindStart()
+      unbindFinish()
+    }
+  }, [])
+
 
   const [itemsPerPage, setItemsPerPage] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -378,15 +391,15 @@ export default function ImportsIndex({ imports }: PageProps) {
                     <td>{record.updatedCount}</td>
                     <td>
                       <strong>{record.errorCount}</strong>
-                      {errors.length > 0 && (
-                        <details>
-                          <summary>Ver erros</summary>
-                          <ul>
-                            {errors.slice(0, 8).map((error) => (
-                              <li key={error}>{error}</li>
-                            ))}
-                          </ul>
-                        </details>
+                      {(record.errorCount > 0 || errors.length > 0) && (
+                        <button
+                          type="button"
+                          className="secondary compact"
+                          style={{ display: 'block', marginTop: 4, fontSize: '11px', padding: '2px 6px', minHeight: 'auto' }}
+                          onClick={() => setActiveImportForErrors(record)}
+                        >
+                          Ver Detalhes
+                        </button>
                       )}
                     </td>
                     <td>
@@ -463,6 +476,111 @@ export default function ImportsIndex({ imports }: PageProps) {
           </div>
         )}
       </section>
+
+      {/* Diagnostics / Errors Details Modal */}
+      {activeImportForErrors && (
+        <div className="modal-backdrop" onClick={() => setActiveImportForErrors(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()} style={{ width: 'min(640px, 100%)' }}>
+            <div className="modal-header">
+              <div>
+                <h2>Detalhes da Importação</h2>
+                <p style={{ margin: '4px 0 0 0', fontSize: 'var(--font-size-sm)', color: 'var(--muted)' }}>
+                  {activeImportForErrors.sourceFileName || `Importação #${activeImportForErrors.id}`}
+                </p>
+              </div>
+              <button
+                type="button"
+                className="secondary compact"
+                style={{ minHeight: 'auto', padding: '4px 8px' }}
+                onClick={() => setActiveImportForErrors(null)}
+              >
+                Fechar
+              </button>
+            </div>
+            <div className="modal-body" style={{ gap: '16px', padding: 'var(--spacing-xl)' }}>
+              <div 
+                style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: 'repeat(4, 1fr)', 
+                  gap: '12px',
+                  background: 'var(--surface-soft)',
+                  padding: '12px',
+                  borderRadius: 'var(--radius-lg)',
+                  border: '1px solid var(--border)',
+                  textAlign: 'center'
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Total Linhas</span>
+                  <strong style={{ fontSize: '16px', color: 'var(--text)', display: 'block', marginTop: '4px' }}>
+                    {activeImportForErrors.totalRows}
+                  </strong>
+                </div>
+                <div>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Novos</span>
+                  <strong style={{ fontSize: '16px', color: 'var(--success)', display: 'block', marginTop: '4px' }}>
+                    {activeImportForErrors.importedCount}
+                  </strong>
+                </div>
+                <div>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Atualizados</span>
+                  <strong style={{ fontSize: '16px', color: 'var(--accent)', display: 'block', marginTop: '4px' }}>
+                    {activeImportForErrors.updatedCount}
+                  </strong>
+                </div>
+                <div>
+                  <span style={{ fontSize: '11px', color: 'var(--muted)', fontWeight: 600, display: 'block' }}>Erros/Pulos</span>
+                  <strong style={{ fontSize: '16px', color: 'var(--danger)', display: 'block', marginTop: '4px' }}>
+                    {activeImportForErrors.errorCount + activeImportForErrors.skippedCount}
+                  </strong>
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{ fontSize: 'var(--font-size-base)', fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text)' }}>
+                  Log de Diagnóstico e Erros ({activeImportForErrors.errorCount})
+                </h3>
+                {activeImportForErrors.errorCount === 0 && parseErrors(activeImportForErrors.errorsJson).length === 0 ? (
+                  <p style={{ color: 'var(--success)', margin: 0, fontSize: 'var(--font-size-sm)', fontWeight: 500 }}>
+                    Nenhum erro encontrado nesta importação.
+                  </p>
+                ) : (
+                  <div 
+                    style={{ 
+                      maxHeight: '260px', 
+                      overflowY: 'auto', 
+                      background: 'var(--danger-soft)', 
+                      border: '1px solid var(--danger)', 
+                      borderRadius: 'var(--radius-lg)',
+                      padding: '12px'
+                    }}
+                  >
+                    <ul style={{ margin: 0, paddingLeft: '16px', fontSize: 'var(--font-size-sm)', color: 'var(--danger)', lineHeight: '1.6' }}>
+                      {parseErrors(activeImportForErrors.errorsJson || '').map((err, idx) => (
+                        <li key={idx} style={{ marginBottom: '6px' }}>{err}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="modal-actions" style={{ padding: '0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl)', borderTop: 'none' }}>
+              <button type="button" className="secondary" onClick={() => setActiveImportForErrors(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global Processing Backdrop Overlay */}
+      {isProcessingGlobal && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <h2 className="loading-text">Processando Planilha</h2>
+          <p className="loading-subtext">Isso pode levar alguns minutos para planilhas grandes. Por favor, aguarde.</p>
+        </div>
+      )}
     </>
   )
 }

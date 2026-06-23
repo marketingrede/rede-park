@@ -4,6 +4,7 @@
  */
 
 export const controllers = {
+  Approvals: () => import('#controllers/approvals_controller'),
   ContactAttempts: () => import('#controllers/contact_attempts_controller'),
   Dashboard: () => import('#controllers/dashboard_controller'),
   Employees: () => import('#controllers/employees_controller'),
@@ -11,10 +12,9 @@ export const controllers = {
   Media: () => import('#controllers/media_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   Operations: () => import('#controllers/operations_controller'),
+  PublicCollaborators: () => import('#controllers/public_collaborators_controller'),
   Session: () => import('#controllers/session_controller'),
   Users: () => import('#controllers/users_controller'),
   Vehicles: () => import('#controllers/vehicles_controller'),
   Visitors: () => import('#controllers/visitors_controller'),
-  PublicCollaborators: () => import('#controllers/public_collaborators_controller'),
-  Approvals: () => import('#controllers/approvals_controller'),
 }
