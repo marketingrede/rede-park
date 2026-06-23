@@ -34,7 +34,7 @@ export default class VehiclesController {
         })
       })
       .orderBy('license_plate', 'asc')
-      .limit(1000) // Aumentando o limite para paginação client-side rica
+      .limit(100)
 
     return inertia.render(
       'vehicles/index' as never,

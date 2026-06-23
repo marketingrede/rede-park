@@ -26,7 +26,7 @@ export default class EmployeesController {
         })
       })
       .orderBy('full_name', 'asc')
-      .limit(1000)
+      .limit(100)
 
     const employeeIds = employees.map((employee) => employee.id)
     const vehicles =

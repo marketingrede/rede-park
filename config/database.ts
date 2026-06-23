@@ -111,7 +111,7 @@ const dbConfig = defineConfig({
       } as any,
       pool: {
         min: 0,
-        max: 1,
+        max: 8,
         idleTimeoutMillis: 5000,
       },
       useNullAsDefault: true,

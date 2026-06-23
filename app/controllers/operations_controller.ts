@@ -47,9 +47,20 @@ export default class OperationsController {
       .limit(500)
 
     const allPast = await Visitor.query()
+      .select([
+        'id',
+        'full_name',
+        'cpf',
+        'license_plate',
+        'vehicle_type',
+        'manufacturer',
+        'model',
+        'year',
+        'company_name',
+      ])
       .whereNotNull('exited_at')
       .orderBy('entered_at', 'desc')
-      .limit(1000)
+      .limit(200)
 
     const uniquePastMap = new Map<string, any>()
     for (const v of allPast) {
