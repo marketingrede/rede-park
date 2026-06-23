@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Head } from '@inertiajs/react'
+import { Head, Link } from '@inertiajs/react'
 import { toast } from 'sonner'
 import {
   User,
@@ -450,6 +450,13 @@ export default function CollaboratorRegister() {
                     </div>
                   )}
                 </div>
+
+                <p className="small muted" style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.85rem' }}>
+                  Ao enviar este cadastro, você declara estar ciente e concordar com a nossa{' '}
+                  <Link href="/politica-privacidade" style={{ color: 'var(--primary)', textDecoration: 'underline' }}>
+                    Política de Uso, Segurança e Armazenamento dos Dados do Colaborador
+                  </Link>.
+                </p>
 
                 <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
                   <button type="button" className="secondary" onClick={() => setStep(1)} style={{ flex: 1 }}>

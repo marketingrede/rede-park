@@ -48,6 +48,12 @@ const routes = {
     tokens: [{"old":"/api/public/employees/submit","type":0,"val":"api","end":""},{"old":"/api/public/employees/submit","type":0,"val":"public","end":""},{"old":"/api/public/employees/submit","type":0,"val":"employees","end":""},{"old":"/api/public/employees/submit","type":0,"val":"submit","end":""}],
     types: placeholder as Registry['public_collaborators.submit']['types'],
   },
+  'public.privacy_policy': {
+    methods: ["GET","HEAD"],
+    pattern: '/politica-privacidade',
+    tokens: [{"old":"/politica-privacidade","type":0,"val":"politica-privacidade","end":""}],
+    types: placeholder as Registry['public.privacy_policy']['types'],
+  },
   'home': {
     methods: ["GET","HEAD"],
     pattern: '/',

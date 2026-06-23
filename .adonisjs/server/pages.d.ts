@@ -26,5 +26,6 @@ declare module '@adonisjs/inertia/types' {
     'visitors/index': ExtractProps<(typeof import('../../inertia/pages/visitors/index.tsx'))['default']>
     'public/collaborator_register': ExtractProps<(typeof import('../../inertia/pages/public/collaborator_register.tsx'))['default']>
     'admin/approvals/index': ExtractProps<(typeof import('../../inertia/pages/admin/approvals/index.tsx'))['default']>
+    'public/privacy_policy': ExtractProps<(typeof import('../../inertia/pages/public/privacy_policy.tsx'))['default']>
   }
 }

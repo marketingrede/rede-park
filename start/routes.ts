@@ -37,6 +37,9 @@ const ApprovalsController = () => import('#controllers/approvals_controller')
 router.get('cadastro-colaborador', [PublicCollaboratorsController, 'showForm']).as('public.collaborator_register')
 router.post('api/public/employees/lookup', [PublicCollaboratorsController, 'lookup'])
 router.post('api/public/employees/submit', [PublicCollaboratorsController, 'submit'])
+router.get('politica-privacidade', ({ inertia }) => {
+  return inertia.render('public/privacy_policy', {})
+}).as('public.privacy_policy')
 
 router
   .group(() => {

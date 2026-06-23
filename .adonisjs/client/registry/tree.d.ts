@@ -13,6 +13,7 @@ export interface ApiDefinition {
   }
   public: {
     collaboratorRegister: typeof routes['public.collaborator_register']
+    privacyPolicy: typeof routes['public.privacy_policy']
   }
   publicCollaborators: {
     lookup: typeof routes['public_collaborators.lookup']

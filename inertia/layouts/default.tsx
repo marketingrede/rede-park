@@ -27,6 +27,7 @@ const publicPages = new Set([
   'auth/login',
   'auth/signup',
   'public/collaborator_register',
+  'public/privacy_policy',
   'errors/not_found',
   'errors/server_error',
 ])
