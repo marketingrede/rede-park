@@ -14,5 +14,5 @@ export function buildVehicleContactMessage(input: {
 export function buildWhatsAppUrl(phone: string, message: string) {
   const normalizedPhone = normalizePhone(phone)
   const encodedMessage = encodeURIComponent(message)
-  return `https://wa.me/${normalizedPhone}?text=${encodedMessage}`
+  return `https://web.whatsapp.com/send?phone=${normalizedPhone}&text=${encodedMessage}`
 }

@@ -433,7 +433,7 @@ export default function OperationIndex({
         throw new Error(data.error || 'Não foi possível abrir o WhatsApp.')
       }
 
-      window.location.assign(data.whatsappUrl)
+      window.open(data.whatsappUrl, '_blank')
     } catch (error) {
       setContactError(error instanceof Error ? error.message : 'Não foi possível abrir o WhatsApp.')
       setPendingContactEmployeeId(null)
