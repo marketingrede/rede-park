@@ -436,6 +436,7 @@ export default function OperationIndex({
       window.open(data.whatsappUrl, '_blank')
     } catch (error) {
       setContactError(error instanceof Error ? error.message : 'Não foi possível abrir o WhatsApp.')
+    } finally {
       setPendingContactEmployeeId(null)
     }
   }
