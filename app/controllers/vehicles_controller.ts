@@ -48,15 +48,16 @@ export default class VehiclesController {
 
   async store({ request, response, session }: HttpContext) {
     const payload = await request.validateUsing(vehicleValidator)
-    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
-    const photoPath = await storeUploadedImage(photo, 'vehicles')
+    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '2mb' })
+    const photoResult = await storeUploadedImage(photo, 'vehicles')
 
     await Vehicle.create({
       ...payload,
       normalizedPlate: normalizePlate(payload.licensePlate),
       licensePlate: normalizePlate(payload.licensePlate),
       status: payload.status ?? 'active',
-      photoPath,
+      photoData: photoResult?.photoData ?? null,
+      photoMime: photoResult?.photoMime ?? null,
     })
 
     session.flash('success', 'Veiculo cadastrado.')
@@ -66,15 +67,16 @@ export default class VehiclesController {
   async update({ params, request, response, session }: HttpContext) {
     const vehicle = await Vehicle.findOrFail(params.id)
     const payload = await request.validateUsing(vehicleValidator)
-    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
-    const photoPath = await storeUploadedImage(photo, 'vehicles')
+    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '2mb' })
+    const photoResult = await storeUploadedImage(photo, 'vehicles')
 
     vehicle.merge({
       ...payload,
       normalizedPlate: normalizePlate(payload.licensePlate),
       licensePlate: normalizePlate(payload.licensePlate),
       status: payload.status ?? vehicle.status,
-      photoPath: photoPath ?? vehicle.photoPath,
+      photoData: photoResult?.photoData ?? vehicle.photoData,
+      photoMime: photoResult?.photoMime ?? vehicle.photoMime,
     })
     await vehicle.save()
 

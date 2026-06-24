@@ -20,7 +20,8 @@ export class ApprovalRequestSchema extends BaseModel {
     'id',
     'normalizedCpf',
     'phone',
-    'photoPath',
+    'photoData',
+    'photoMime',
     'rejectionReason',
     'roleName',
     'status',
@@ -56,7 +57,9 @@ export class ApprovalRequestSchema extends BaseModel {
   @column()
   declare phone: string | null
   @column()
-  declare photoPath: string | null
+  declare photoData: string | null
+  @column()
+  declare photoMime: string | null
   @column()
   declare rejectionReason: string | null
   @column()
@@ -77,6 +80,39 @@ export class ApprovalRequestSchema extends BaseModel {
   declare vehicleType: string | null
   @column()
   declare vehicleYear: number | null
+}
+
+export class AuditLogSchema extends BaseModel {
+  static $columns = [
+    'action',
+    'createdAt',
+    'entityId',
+    'entityType',
+    'id',
+    'ipAddress',
+    'newValues',
+    'oldValues',
+    'userId',
+  ] as const
+  $columns = AuditLogSchema.$columns
+  @column()
+  declare action: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare entityId: number | null
+  @column()
+  declare entityType: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare ipAddress: string | null
+  @column()
+  declare newValues: string | null
+  @column()
+  declare oldValues: string | null
+  @column()
+  declare userId: number | null
 }
 
 export class CompanySchema extends BaseModel {
@@ -149,7 +185,8 @@ export class EmployeeSchema extends BaseModel {
     'normalizedName',
     'notes',
     'phone',
-    'photoPath',
+    'photoData',
+    'photoMime',
     'roleName',
     'seniorImportId',
     'seniorRaw',
@@ -189,7 +226,9 @@ export class EmployeeSchema extends BaseModel {
   @column()
   declare phone: string | null
   @column()
-  declare photoPath: string | null
+  declare photoData: string | null
+  @column()
+  declare photoMime: string | null
   @column()
   declare roleName: string | null
   @column()
@@ -299,7 +338,8 @@ export class VehicleSchema extends BaseModel {
     'model',
     'normalizedPlate',
     'notes',
-    'photoPath',
+    'photoData',
+    'photoMime',
     'status',
     'updatedAt',
     'vehicleType',
@@ -325,7 +365,9 @@ export class VehicleSchema extends BaseModel {
   @column()
   declare notes: string | null
   @column()
-  declare photoPath: string | null
+  declare photoData: string | null
+  @column()
+  declare photoMime: string | null
   @column()
   declare status: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })

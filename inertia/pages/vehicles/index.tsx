@@ -19,7 +19,8 @@ type Vehicle = {
   model: string | null
   year: number | null
   color: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
   status: string
   notes: string | null
 }
@@ -102,6 +103,7 @@ function VehicleFields({ vehicle, employees }: { vehicle?: Vehicle; employees: E
 }
 
 export default function VehiclesIndex({ filters, vehicles, employees }: PageProps) {
+  const [isCreatingVehicle, setIsCreatingVehicle] = useState(false)
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null)
 
   const handleFilterSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -163,27 +165,11 @@ export default function VehiclesIndex({ filters, vehicles, employees }: PageProp
           <h1>Veículos</h1>
           <p>Placas, modelos e vínculo com colaborador.</p>
         </div>
-      </header>
-
-      <details className="collapsible-section">
-        <summary>
+        <button type="button" onClick={() => setIsCreatingVehicle(true)}>
           <Plus size={16} />
-          Novo veículo — a foto é opcional
-        </summary>
-        <div className="collapsible-body">
-          <Form action={{ url: '/veiculos', method: 'post' }}>
-            {({ processing }) => (
-              <>
-                <VehicleFields employees={employees} />
-                <button type="submit" disabled={processing} style={{ marginTop: 16 }}>
-                  <Plus size={18} />
-                  Salvar veículo
-                </button>
-              </>
-            )}
-          </Form>
-        </div>
-      </details>
+          Novo veículo
+        </button>
+      </header>
 
       <section className="panel">
         <form className="toolbar" onSubmit={handleFilterSubmit}>
@@ -325,6 +311,55 @@ export default function VehiclesIndex({ filters, vehicles, employees }: PageProp
           </div>
         )}
       </section>
+
+      {isCreatingVehicle && (
+        <div className="modal-backdrop" onClick={() => setIsCreatingVehicle(false)}>
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-vehicle-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="new-vehicle-title">Novo veículo</h2>
+                <p>Vincule o veículo a um colaborador. A foto é opcional.</p>
+              </div>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Fechar"
+                onClick={() => setIsCreatingVehicle(false)}
+              >
+                <X size={18} />
+              </button>
+            </header>
+            <div className="modal-body">
+              <Form action={{ url: '/veiculos', method: 'post' }}>
+                {({ processing }) => (
+                  <>
+                    <VehicleFields employees={employees} />
+                    <div className="modal-actions">
+                      <button type="submit" disabled={processing}>
+                        <Plus size={18} />
+                        Salvar veículo
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => setIsCreatingVehicle(false)}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                )}
+              </Form>
+            </div>
+          </section>
+        </div>
+      )}
 
       {editingVehicle && (
         <div className="modal-backdrop" onClick={() => setEditingVehicle(null)}>

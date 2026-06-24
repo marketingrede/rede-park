@@ -12,7 +12,8 @@ type Employee = {
   phone: string | null
   alternatePhone: string | null
   email: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
   companyName: string | null
   roleName: string | null
 }
@@ -27,7 +28,8 @@ type ApprovalRequest = {
   phone: string | null
   alternatePhone: string | null
   email: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
   companyName: string | null
   roleName: string | null
 
@@ -178,8 +180,12 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                   <tr key={approval.id}>
                     <td>
                       <div className="person-main">
-                        {approval.photoPath ? (
-                          <img className="avatar" src={approval.photoPath} alt="" />
+                        {approval.photoData ? (
+                          <img
+                            className="avatar"
+                            src={`/media/employees/${approval.id}.png`}
+                            alt=""
+                          />
                         ) : (
                           <span className="photo-fallback" aria-hidden="true">
                             {approval.fullName.substring(0, 2).toUpperCase()}
@@ -308,26 +314,19 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                       background: 'var(--surface-soft)',
                     }}
                   >
-                    {selectedApproval.employee?.photoPath && (
-                      <div style={{ textAlign: 'center' }}>
-                        <span
-                          className="small muted"
-                          style={{ display: 'block', marginBottom: '8px' }}
-                        >
-                          Atual
-                        </span>
-                        <img
-                          src={selectedApproval.employee.photoPath}
-                          alt="Foto atual"
-                          style={{
-                            width: '96px',
-                            height: '96px',
-                            borderRadius: 'var(--radius-lg)',
-                            objectFit: 'cover',
-                            border: '1px solid var(--border)',
-                          }}
-                        />
-                      </div>
+                    {selectedApproval.employee?.photoData && (
+                      <img
+                        className="avatar"
+                        src={`/media/employees/${selectedApproval.employee.id}.png`}
+                        alt="Foto atual"
+                        style={{
+                          width: '96px',
+                          height: '96px',
+                          borderRadius: 'var(--radius-lg)',
+                          objectFit: 'cover',
+                          border: '1px solid var(--border)',
+                        }}
+                      />
                     )}
                     <div style={{ textAlign: 'center' }}>
                       <span
@@ -336,9 +335,10 @@ export default function ApprovalsIndex({ approvals }: PageProps) {
                       >
                         Proposta
                       </span>
-                      {selectedApproval.photoPath ? (
+                      {selectedApproval.photoData ? (
                         <img
-                          src={selectedApproval.photoPath}
+                          className="avatar"
+                          src={`/media/employees/${selectedApproval.id}.png`}
                           alt="Nova foto"
                           style={{
                             width: '96px',

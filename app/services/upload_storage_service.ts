@@ -1,11 +1,9 @@
-import app from '@adonisjs/core/services/app'
-import { mkdir } from 'node:fs/promises'
+import { readFile, unlink, mkdir } from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import type { MultipartFile } from '@adonisjs/bodyparser/types'
 import os from 'node:os'
 import path from 'node:path'
-
-const allowedScopes = new Set(['employees', 'vehicles'])
+import app from '@adonisjs/core/services/app'
 
 export function getWritableStoragePath(...subPaths: string[]) {
   if (process.env.VERCEL) {
@@ -15,32 +13,35 @@ export function getWritableStoragePath(...subPaths: string[]) {
 }
 
 export async function storeUploadedImage(
-  file: MultipartFile | null,
-  scope: 'employees' | 'vehicles'
-) {
-  if (!file || !file.isValid) {
+  _file: MultipartFile | null,
+  _scope: 'employees' | 'vehicles'
+): Promise<{ photoData: string; photoMime: string } | null> {
+  if (!_file || !_file.isValid) {
     return null
   }
 
-  const extension = file.extname ? `.${file.extname}` : ''
-  const fileName = `${randomUUID()}${extension}`
-  const targetDirectory = getWritableStoragePath('uploads', scope)
+  const mime =
+    _file.type && _file.subtype ? `${_file.type}/${_file.subtype}` : 'application/octet-stream'
 
-  await mkdir(targetDirectory, { recursive: true })
-  await file.move(targetDirectory, { name: fileName, overwrite: false })
+  const tempDir = path.join(os.tmpdir(), 'redepark-upload')
+  await mkdir(tempDir, { recursive: true })
 
-  return `/media/${scope}/${fileName}`
+  const tempFile = path.join(tempDir, `${randomUUID()}.${_file.extname || 'bin'}`)
+  await _file.move(tempDir, { name: path.basename(tempFile), overwrite: false })
+
+  try {
+    const buffer = await readFile(tempFile)
+    const base64 = buffer.toString('base64')
+    return { photoData: base64, photoMime: mime }
+  } finally {
+    try {
+      await unlink(tempFile)
+    } catch {
+      // Ignore cleanup errors
+    }
+  }
 }
 
-export function resolveStoredImagePath(scope: string, fileName: string) {
-  if (
-    !allowedScopes.has(scope) ||
-    fileName.includes('..') ||
-    fileName.includes('/') ||
-    fileName.includes('\\')
-  ) {
-    return null
-  }
-
-  return getWritableStoragePath('uploads', scope, fileName)
+export function resolveStoredImagePath(_scope: string, _fileName: string) {
+  return null
 }

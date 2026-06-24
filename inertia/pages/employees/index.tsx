@@ -17,7 +17,8 @@ type Employee = {
   phone: string | null
   alternatePhone: string | null
   email: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
   status: string
   notes: string | null
 }
@@ -39,10 +40,12 @@ type PageProps = InertiaProps<{
 }>
 
 function EmployeeFields({ employee }: { employee?: Employee }) {
-  const [preview, setPreview] = useState<string | null>(employee?.photoPath ?? null)
+  const [preview, setPreview] = useState<string | null>(
+    employee?.photoData ? `/media/employees/${employee.id}.png` : null
+  )
 
   useEffect(() => {
-    setPreview(employee?.photoPath ?? null)
+    setPreview(employee?.photoData ? `/media/employees/${employee.id}.png` : null)
   }, [employee])
 
   // Clean up object URL when preview or component changes
@@ -448,8 +451,12 @@ export default function EmployeesIndex({ filters, employees, vehicles, companies
                   </td>
                   <td>
                     <div className="person-main">
-                      {employee.photoPath ? (
-                        <img className="avatar" src={employee.photoPath} alt="" />
+                      {employee.photoData ? (
+                        <img
+                          className="avatar"
+                          src={`/media/employees/${employee.id}.png`}
+                          alt=""
+                        />
                       ) : (
                         <span className="photo-fallback" aria-hidden="true">
                           {makeInitials(employee.fullName)}

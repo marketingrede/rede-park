@@ -70,11 +70,11 @@ export default class PublicCollaboratorsController {
   async submit({ request, response }: HttpContext) {
     const payload = request.all()
     const photo = request.file('photo', {
-      size: '4mb',
+      size: '2mb',
       extnames: ['jpg', 'png', 'jpeg'],
     })
 
-    const photoPath = await storeUploadedImage(photo, 'employees')
+    const photoResult = await storeUploadedImage(photo, 'employees')
 
     // Create the approval request without CPF
     await ApprovalRequest.create({
@@ -86,7 +86,8 @@ export default class PublicCollaboratorsController {
       phone: payload.phone ? normalizePhone(payload.phone) : null,
       alternatePhone: payload.alternatePhone ? normalizePhone(payload.alternatePhone) : null,
       email: payload.email || null,
-      photoPath: photoPath,
+      photoData: photoResult?.photoData ?? null,
+      photoMime: photoResult?.photoMime ?? null,
       companyName: payload.companyName || null,
       roleName: payload.roleName || null,
       vehiclePlate: payload.vehiclePlate ? normalizePlate(payload.vehiclePlate) : null,

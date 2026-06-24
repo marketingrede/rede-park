@@ -1,32 +1,59 @@
-import { resolveStoredImagePath } from '#services/upload_storage_service'
 import type { HttpContext } from '@adonisjs/core/http'
 
-const allowedExtensions = new Set(['jpg', 'jpeg', 'png', 'webp'])
-
-const mimeTypes: Record<string, string> = {
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  png: 'image/png',
-  webp: 'image/webp',
-}
+const allowedScopes = new Set(['employees', 'vehicles'])
 
 export default class MediaController {
   async show({ params, response }: HttpContext) {
+    const scope = String(params.scope ?? '')
     const fileName = String(params.fileName ?? '')
+
+    if (
+      !allowedScopes.has(scope) ||
+      fileName.includes('..') ||
+      fileName.includes('/') ||
+      fileName.includes('\\')
+    ) {
+      return response.notFound()
+    }
+
     const ext = fileName.split('.').pop()?.toLowerCase() ?? ''
-
-    if (!allowedExtensions.has(ext)) {
+    if (!['jpg', 'jpeg', 'png', 'webp'].includes(ext)) {
       return response.notFound()
     }
 
-    const filePath = resolveStoredImagePath(params.scope, fileName)
-    if (!filePath) {
+    const id = parseInt(fileName.split('.')[0], 10)
+    if (isNaN(id)) {
       return response.notFound()
     }
 
-    response.header('Content-Type', mimeTypes[ext] ?? 'application/octet-stream')
+    let photoData: string | null = null
+    let photoMime: string | null = null
+
+    if (scope === 'employees') {
+      const { default: Employee } = await import('#models/employee')
+      const employee = await Employee.find(id)
+      if (employee) {
+        photoData = employee.photoData
+        photoMime = employee.photoMime
+      }
+    } else if (scope === 'vehicles') {
+      const { default: Vehicle } = await import('#models/vehicle')
+      const vehicle = await Vehicle.find(id)
+      if (vehicle) {
+        photoData = vehicle.photoData
+        photoMime = vehicle.photoMime
+      }
+    }
+
+    if (!photoData || !photoMime) {
+      return response.notFound()
+    }
+
+    const buffer = Buffer.from(photoData, 'base64')
+
+    response.header('Content-Type', photoMime)
     response.header('Cache-Control', 'public, max-age=86400')
 
-    return response.download(filePath)
+    return response.send(buffer)
   }
 }

@@ -35,7 +35,8 @@ type Vehicle = {
   color: string | null
   vehicleType: string
   notes: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
 }
 
 type EmployeeCard = {
@@ -49,7 +50,8 @@ type EmployeeCard = {
   phone: string | null
   alternatePhone: string | null
   email: string | null
-  photoPath: string | null
+  photoData: string | null
+  photoMime: string | null
   notes: string | null
   status: string
   vehicles: Vehicle[]
@@ -560,8 +562,12 @@ export default function OperationIndex({
                         aria-label={`Abrir detalhes de ${employee.fullName}`}
                       >
                         <div className="employee-card-header">
-                          {employee.photoPath ? (
-                            <img className="employee-card-photo" src={employee.photoPath} alt="" />
+                          {employee.photoData ? (
+                            <img
+                              className="employee-card-photo"
+                              src={`/media/employees/${employee.id}.png`}
+                              alt=""
+                            />
                           ) : (
                             <span className="employee-card-photo-fallback" aria-hidden="true">
                               {makeInitials(employee.fullName)}
@@ -663,8 +669,12 @@ export default function OperationIndex({
                         onKeyDown={(event) => openEmployeeFromCard(event, employee)}
                         aria-label={`Abrir detalhes de ${employee.fullName}`}
                       >
-                        {employee.photoPath ? (
-                          <img className="employee-list-photo" src={employee.photoPath} alt="" />
+                        {employee.photoData ? (
+                          <img
+                            className="employee-list-photo"
+                            src={`/media/employees/${employee.id}.png`}
+                            alt=""
+                          />
                         ) : (
                           <span className="employee-list-photo-fallback" aria-hidden="true">
                             {makeInitials(employee.fullName)}
@@ -897,8 +907,12 @@ export default function OperationIndex({
           >
             <header className="modal-header">
               <div className="person-main">
-                {selectedEmployee.photoPath ? (
-                  <img className="avatar large" src={selectedEmployee.photoPath} alt="" />
+                {selectedEmployee.photoData ? (
+                  <img
+                    className="avatar large"
+                    src={`/media/employees/${selectedEmployee.id}.png`}
+                    alt=""
+                  />
                 ) : (
                   <span className="photo-fallback large" aria-hidden="true">
                     {makeInitials(selectedEmployee.fullName)}
@@ -968,8 +982,12 @@ export default function OperationIndex({
                   <div className="vehicle-list">
                     {selectedEmployee.vehicles.map((vehicle) => (
                       <article className="vehicle-row" key={vehicle.id}>
-                        {vehicle.photoPath ? (
-                          <img className="vehicle-thumb" src={vehicle.photoPath} alt="" />
+                        {vehicle.photoData ? (
+                          <img
+                            className="vehicle-thumb"
+                            src={`/media/vehicles/${vehicle.id}.png`}
+                            alt=""
+                          />
                         ) : (
                           <span className="vehicle-thumb" aria-hidden="true">
                             <Car size={18} weight="duotone" />

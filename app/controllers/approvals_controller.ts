@@ -3,9 +3,7 @@ import ApprovalRequest from '#models/approval_request'
 import Employee from '#models/employee'
 import Vehicle from '#models/vehicle'
 import { normalizeSearchText } from '#services/normalization_service'
-import { getWritableStoragePath } from '#services/upload_storage_service'
 import { auditLog } from '#services/audit_service'
-import { unlink } from 'node:fs/promises'
 
 export default class ApprovalsController {
   async index({ inertia }: HttpContext) {
@@ -37,7 +35,8 @@ export default class ApprovalsController {
           phone: approvalRequest.phone || employee.phone,
           alternatePhone: approvalRequest.alternatePhone || employee.alternatePhone,
           email: approvalRequest.email || employee.email,
-          photoPath: approvalRequest.photoPath || employee.photoPath,
+          photoData: approvalRequest.photoData || employee.photoData,
+          photoMime: approvalRequest.photoMime || employee.photoMime,
           companyName: approvalRequest.companyName || employee.companyName,
           roleName: approvalRequest.roleName || employee.roleName,
           cpf: approvalRequest.cpf,
@@ -52,7 +51,8 @@ export default class ApprovalsController {
           phone: approvalRequest.phone,
           alternatePhone: approvalRequest.alternatePhone,
           email: approvalRequest.email,
-          photoPath: approvalRequest.photoPath,
+          photoData: approvalRequest.photoData,
+          photoMime: approvalRequest.photoMime,
           companyName: approvalRequest.companyName,
           roleName: approvalRequest.roleName,
           cpf: approvalRequest.cpf,
@@ -120,6 +120,8 @@ export default class ApprovalsController {
     approval.rejectionReason = reason || 'Rejeitado pelo administrador.'
     await approval.save()
 
+    // LGPD Cleanup: photo data is stored in DB, no file to delete
+
     await auditLog({
       user: auth.user,
       action: 'reject',
@@ -128,18 +130,6 @@ export default class ApprovalsController {
       newValues: { reason: approval.rejectionReason },
       ip: request.ip(),
     })
-
-    // LGPD Cleanup: Delete the temporary uploaded file to protect privacy
-    if (approval.photoPath) {
-      try {
-        const parts = approval.photoPath.split('/')
-        const fileName = parts[parts.length - 1]
-        const filePath = getWritableStoragePath('uploads', 'employees', fileName)
-        await unlink(filePath)
-      } catch (err) {
-        // Ignored if file doesn't exist
-      }
-    }
 
     session.flash('success', 'Solicitação rejeitada e arquivos descartados.')
     return response.redirect().back()

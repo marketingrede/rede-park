@@ -56,15 +56,16 @@ export default class EmployeesController {
 
   async store({ request, auth, response, session }: HttpContext) {
     const payload = await request.validateUsing(employeeValidator)
-    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
-    const photoPath = await storeUploadedImage(photo, 'employees')
+    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '2mb' })
+    const photoResult = await storeUploadedImage(photo, 'employees')
 
     const employee = await Employee.create({
       ...payload,
       normalizedName: normalizeSearchText(payload.fullName),
       phone: payload.phone ? normalizeDigits(payload.phone) : null,
       alternatePhone: payload.alternatePhone ? normalizeDigits(payload.alternatePhone) : null,
-      photoPath,
+      photoData: photoResult?.photoData ?? null,
+      photoMime: photoResult?.photoMime ?? null,
       status: payload.status ?? 'active',
     })
 
@@ -84,8 +85,8 @@ export default class EmployeesController {
   async update({ params, request, auth, response, session }: HttpContext) {
     const employee = await Employee.findOrFail(params.id)
     const payload = await request.validateUsing(employeeValidator)
-    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '3mb' })
-    const photoPath = await storeUploadedImage(photo, 'employees')
+    const photo = request.file('photo', { extnames: ['jpg', 'jpeg', 'png', 'webp'], size: '2mb' })
+    const photoResult = await storeUploadedImage(photo, 'employees')
 
     const oldValues = { fullName: employee.fullName, companyName: employee.companyName }
 
@@ -94,7 +95,8 @@ export default class EmployeesController {
       normalizedName: normalizeSearchText(payload.fullName),
       phone: payload.phone ? normalizeDigits(payload.phone) : null,
       alternatePhone: payload.alternatePhone ? normalizeDigits(payload.alternatePhone) : null,
-      photoPath: photoPath ?? employee.photoPath,
+      photoData: photoResult?.photoData ?? employee.photoData,
+      photoMime: photoResult?.photoMime ?? employee.photoMime,
       status: payload.status ?? employee.status,
     })
     await employee.save()
