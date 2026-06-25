@@ -86,7 +86,7 @@ export default class VisitorsController {
     })
 
     session.flash('success', 'Visitante registrado.')
-    return response.redirect().back()
+    return response.redirect('/visitantes')
   }
 
   async exit({ params, request, auth, response, session }: HttpContext) {
@@ -103,6 +103,6 @@ export default class VisitorsController {
     })
 
     session.flash('success', 'Saída registrada.')
-    return response.redirect().back()
+    return response.redirect('/visitantes')
   }
 }

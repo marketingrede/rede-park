@@ -1,10 +1,9 @@
 import type { InertiaProps } from '~/types'
-import { Form } from '@adonisjs/inertia/react'
 import { router } from '@inertiajs/react'
 import { DoorOpen, MagnifyingGlass, Plus } from '@phosphor-icons/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { formatDateTime, formatPlate } from '~/lib/format'
-import VisitorModal, { Visitor } from '~/components/visitor_modal'
+import VisitorModal, { type Visitor } from '~/components/visitor_modal'
 
 type PageProps = InertiaProps<{
   filters: { q: string; status: string }
@@ -30,6 +29,22 @@ export default function VisitorsIndex({ filters, visitors, pastVisitors }: PageP
     return 10
   })
   const [currentPage, setCurrentPage] = useState(1)
+  const [exitingId, setExitingId] = useState<number | null>(null)
+
+  const handleExit = useCallback((visitorId: number) => {
+    setExitingId(visitorId)
+    router.post(
+      `/visitantes/${visitorId}/saida`,
+      {},
+      {
+        preserveScroll: true,
+        onSuccess: () => {
+          router.reload({ only: ['visitors', 'pastVisitors'] })
+        },
+        onFinish: () => setExitingId(null),
+      }
+    )
+  }, [])
 
   // Reset page when filters change
   useEffect(() => {
@@ -149,14 +164,15 @@ export default function VisitorsIndex({ filters, visitors, pastVisitors }: PageP
                   </td>
                   <td>
                     {!visitor.exitedAt && (
-                      <Form action={{ url: `/visitantes/${visitor.id}/saida`, method: 'post' }}>
-                        {({ processing }) => (
-                          <button type="submit" className="secondary compact" disabled={processing}>
-                            <DoorOpen size={18} />
-                            Registrar saída
-                          </button>
-                        )}
-                      </Form>
+                      <button
+                        type="button"
+                        className="secondary compact"
+                        disabled={exitingId === visitor.id}
+                        onClick={() => handleExit(visitor.id)}
+                      >
+                        <DoorOpen size={18} />
+                        {exitingId === visitor.id ? 'Registrando...' : 'Registrar saída'}
+                      </button>
                     )}
                   </td>
                 </tr>

@@ -6,12 +6,19 @@ import { normalizeSearchText } from '#services/normalization_service'
 import { auditLog } from '#services/audit_service'
 
 export default class ApprovalsController {
-  async index({ inertia }: HttpContext) {
-    const pending = await ApprovalRequest.query()
-      .where('status', 'pending')
-      .preload('employee')
-      .orderBy('createdAt', 'desc')
-    return inertia.render('admin/approvals/index' as never, { approvals: pending } as never)
+  async index({ inertia, response }: HttpContext) {
+    try {
+      const pending = await ApprovalRequest.query()
+        .where('status', 'pending')
+        .preload('employee')
+        .orderBy('createdAt', 'desc')
+      return inertia.render('admin/approvals/index' as never, { approvals: pending } as never)
+    } catch (error: any) {
+      if (error.message?.includes('no such table') || error.code === 'SQLITE_ERROR') {
+        return inertia.render('admin/approvals/index' as never, { approvals: [] } as never)
+      }
+      throw error
+    }
   }
 
   async approve({ params, request, auth, response, session }: HttpContext) {
@@ -19,7 +26,7 @@ export default class ApprovalsController {
 
     if (approvalRequest.status !== 'pending') {
       session.flash('error', 'Esta solicitação já foi processada.')
-      return response.redirect().back()
+      return response.redirect('/usuarios/aprovacoes')
     }
 
     const db = await import('@adonisjs/lucid/services/db')
@@ -104,7 +111,7 @@ export default class ApprovalsController {
     })
 
     session.flash('success', 'Solicitação aprovada com sucesso!')
-    return response.redirect().back()
+    return response.redirect('/usuarios/aprovacoes')
   }
 
   async reject({ params, request, auth, response, session }: HttpContext) {
@@ -113,7 +120,7 @@ export default class ApprovalsController {
 
     if (approval.status !== 'pending') {
       session.flash('error', 'Esta solicitação já foi processada.')
-      return response.redirect().back()
+      return response.redirect('/usuarios/aprovacoes')
     }
 
     approval.status = 'rejected'
@@ -132,6 +139,6 @@ export default class ApprovalsController {
     })
 
     session.flash('success', 'Solicitação rejeitada e arquivos descartados.')
-    return response.redirect().back()
+    return response.redirect('/usuarios/aprovacoes')
   }
 }
