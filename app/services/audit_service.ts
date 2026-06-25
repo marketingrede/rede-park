@@ -12,13 +12,17 @@ type AuditParams = {
 }
 
 export async function auditLog(params: AuditParams): Promise<void> {
-  await AuditLog.create({
-    userId: params.user?.id ?? null,
-    action: params.action,
-    entityType: params.entityType ?? null,
-    entityId: params.entityId ?? null,
-    oldValues: params.oldValues ? JSON.stringify(params.oldValues) : null,
-    newValues: params.newValues ? JSON.stringify(params.newValues) : null,
-    ipAddress: params.ip ?? null,
-  })
+  try {
+    await AuditLog.create({
+      userId: params.user?.id ?? null,
+      action: params.action,
+      entityType: params.entityType ?? null,
+      entityId: params.entityId ?? null,
+      oldValues: params.oldValues ? JSON.stringify(params.oldValues) : null,
+      newValues: params.newValues ? JSON.stringify(params.newValues) : null,
+      ipAddress: params.ip ?? null,
+    })
+  } catch (error) {
+    console.warn('Falha ao gravar auditoria', { err: error, action: params.action })
+  }
 }

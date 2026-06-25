@@ -9,7 +9,7 @@ const shieldConfig = defineConfig({
     /**
      * Enable the Content-Security-Policy header.
      */
-    enabled: true,
+    enabled: process.env.NODE_ENV !== 'test',
 
     /**
      * Per-resource CSP directives.

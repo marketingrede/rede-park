@@ -6,8 +6,17 @@ import { dbAssertions } from '@adonisjs/lucid/plugins/db'
 import testUtils from '@adonisjs/core/services/test_utils'
 import { browserClient } from '@japa/browser-client'
 import { authBrowserClient } from '@adonisjs/auth/plugins/browser_client'
+import { authApiClient } from '@adonisjs/auth/plugins/api_client'
 import { sessionBrowserClient } from '@adonisjs/session/plugins/browser_client'
-import { apiClient, type ApiClient } from '@japa/api-client'
+import { sessionApiClient } from '@adonisjs/session/plugins/api_client'
+import { shieldApiClient } from '@adonisjs/shield/plugins/api_client'
+import {
+  ApiClient,
+  apiClient,
+  type ApiRequest,
+  type ApiClient as JapaApiClient,
+} from '@japa/api-client'
+import { TestContext } from '@japa/runner/core'
 
 declare module '@japa/core' {
   interface TestContext {
@@ -28,6 +37,25 @@ export const plugins: Config['plugins'] = [
   pluginAdonisJS(app),
   dbAssertions(app),
   apiClient(),
+  sessionApiClient(app),
+  authApiClient(app),
+  shieldApiClient(),
+  () => {
+    ApiClient.onRequest((request: ApiRequest) => {
+      if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.request.method)) {
+        request.withCsrfToken()
+      }
+    })
+  },
+  () => {
+    TestContext.getter(
+      'http',
+      function (this: { client: JapaApiClient }) {
+        return this.client
+      },
+      true
+    )
+  },
   browserClient({ runInSuites: ['browser'] }),
   sessionBrowserClient(app),
   authBrowserClient(app),
@@ -41,7 +69,7 @@ export const plugins: Config['plugins'] = [
  * The teardown functions are executed after all the tests
  */
 export const runnerHooks: Required<Pick<Config, 'setup' | 'teardown'>> = {
-  setup: [],
+  setup: [() => testUtils.db().migrate()],
   teardown: [],
 }
 

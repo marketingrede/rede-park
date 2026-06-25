@@ -302,6 +302,14 @@ summary:focus-visible,
   margin-bottom: var(--spacing-2xl);
 }
 
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
 .page-title h1 {
   margin: 0;
   font-size: var(--font-size-2xl);
@@ -1981,6 +1989,17 @@ tr:last-child td {
   .toolbar {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .topbar-actions {
+    align-items: stretch;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .topbar-actions button {
+    justify-content: center;
+    width: 100%;
   }
 
   .form-grid,

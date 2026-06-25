@@ -3,10 +3,12 @@ import User from '#models/user'
 import Visitor from '#models/visitor'
 
 test.group('Visitors', (group) => {
+  let admin: User
+
   group.each.setup(async () => {
     await Visitor.query().delete()
     await User.query().delete()
-    await User.create({
+    admin = await User.create({
       fullName: 'Admin',
       email: 'admin@test.com',
       password: 'Senha123',
@@ -16,12 +18,7 @@ test.group('Visitors', (group) => {
   })
 
   test('visitante pode ser registrado', async ({ http, assert }) => {
-    await http.post('/login').form({
-      email: 'admin@test.com',
-      password: 'Senha123',
-    })
-
-    const response = await http.post('/visitantes').form({
+    const response = await http.post('/visitantes').loginAs(admin).redirects(0).form({
       fullName: 'Visitante Teste',
       cpf: '12345678901',
       licensePlate: 'ABC1D23',
@@ -35,12 +32,7 @@ test.group('Visitors', (group) => {
   })
 
   test('saida de visitante registra exited_at', async ({ http, assert }) => {
-    await http.post('/login').form({
-      email: 'admin@test.com',
-      password: 'Senha123',
-    })
-
-    await http.post('/visitantes').form({
+    await http.post('/visitantes').loginAs(admin).redirects(0).form({
       fullName: 'Visitante Saida',
       cpf: '98765432100',
       licensePlate: 'XYZ9A87',
@@ -49,7 +41,10 @@ test.group('Visitors', (group) => {
     const visitor = await Visitor.findBy('normalized_cpf', '98765432100')
     assert.isNotNull(visitor)
 
-    const exitResponse = await http.post(`/visitantes/${visitor!.id}/saida`)
+    const exitResponse = await http
+      .post(`/visitantes/${visitor!.id}/saida`)
+      .loginAs(admin)
+      .redirects(0)
     exitResponse.assertStatus(302)
 
     await visitor!.refresh()

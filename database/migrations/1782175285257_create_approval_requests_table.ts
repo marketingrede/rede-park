@@ -6,7 +6,12 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').notNullable()
-      table.integer('employee_id').unsigned().references('id').inTable('employees').onDelete('SET NULL')
+      table
+        .integer('employee_id')
+        .unsigned()
+        .references('id')
+        .inTable('employees')
+        .onDelete('SET NULL')
       table.string('cpf', 20).notNullable()
       table.string('normalized_cpf', 11).notNullable().index()
       table.string('full_name', 180).notNullable()
@@ -17,7 +22,7 @@ export default class extends BaseSchema {
       table.string('photo_path', 500).nullable()
       table.string('company_name', 160).nullable()
       table.string('role_name', 140).nullable()
-      
+
       // Vehicle details submitted
       table.string('vehicle_plate', 12).nullable()
       table.string('vehicle_manufacturer', 80).nullable()

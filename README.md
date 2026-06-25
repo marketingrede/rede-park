@@ -25,6 +25,12 @@ node ace migration:run
 npm run dev
 ```
 
+Por padrao, o ambiente local executa em:
+
+```bash
+http://localhost:5175
+```
+
 ## Deploy na Vercel
 
 O deploy usa uma Function em `api/index.js`, que carrega o build do Adonis em `build/bin/vercel.js`.

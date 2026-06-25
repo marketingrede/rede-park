@@ -3,25 +3,39 @@ import User from '#models/user'
 
 export default class extends BaseSeeder {
   async run() {
-    const adminEmail = 'admin@redepark.com.br'
+    const users = [
+      {
+        email: 'admin@redepark.com.br',
+        password: 'RedeParkAdmin2026!',
+        fullName: 'Administrador',
+        role: 'admin',
+      },
+      {
+        email: 'porteiro@redepark.com.br',
+        password: 'RedeParkPorteiro2026!',
+        fullName: 'Portaria',
+        role: 'operator',
+      },
+    ]
 
-    // Check if the admin user already exists
-    const existingUser = await User.findBy('email', adminEmail)
-    if (existingUser) {
-      existingUser.fullName = 'Administrador'
-      existingUser.role = 'admin'
-      existingUser.status = 'active'
-      existingUser.password = 'RedeParkAdmin2026!' // Will trigger the @beforeSave hook to hash
-      await existingUser.save()
-      return
+    for (const userData of users) {
+      const existingUser = await User.findBy('email', userData.email)
+
+      if (existingUser) {
+        existingUser.fullName = userData.fullName
+        existingUser.role = userData.role
+        existingUser.status = 'active'
+        existingUser.password = userData.password
+        await existingUser.save()
+        continue
+      }
+
+      await User.create({
+        ...userData,
+        status: 'active',
+      })
     }
 
-    await User.create({
-      email: adminEmail,
-      password: 'RedeParkAdmin2026!', // Will trigger the @beforeSave hook to hash
-      fullName: 'Administrador',
-      role: 'admin',
-      status: 'active',
-    })
+    await User.query().where('email', 'admin@test.com').delete()
   }
 }

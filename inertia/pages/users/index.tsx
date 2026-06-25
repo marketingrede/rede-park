@@ -57,6 +57,7 @@ function UserFields({ user, requirePassword }: { user?: ManagedUser; requirePass
 }
 
 export default function UsersIndex({ users }: PageProps) {
+  const [isCreatingUser, setIsCreatingUser] = useState(false)
   const [editingUser, setEditingUser] = useState<ManagedUser | null>(null)
 
   const [itemsPerPage, setItemsPerPage] = useState(() => {
@@ -103,27 +104,11 @@ export default function UsersIndex({ users }: PageProps) {
           <h1>Usuários</h1>
           <p>Admins gerenciam tudo. Operadores usam portaria e visitantes.</p>
         </div>
-      </header>
-
-      <details className="collapsible-section">
-        <summary>
+        <button type="button" onClick={() => setIsCreatingUser(true)}>
           <Plus size={16} />
-          Novo usuário — crie contas para portaria ou administração
-        </summary>
-        <div className="collapsible-body">
-          <Form action={{ url: '/usuarios', method: 'post' }}>
-            {({ processing }) => (
-              <>
-                <UserFields requirePassword />
-                <button type="submit" disabled={processing} style={{ marginTop: 16 }}>
-                  <Plus size={18} />
-                  Criar usuário
-                </button>
-              </>
-            )}
-          </Form>
-        </div>
-      </details>
+          Novo usuário
+        </button>
+      </header>
 
       <section className="panel">
         <div className="section-heading">
@@ -239,6 +224,55 @@ export default function UsersIndex({ users }: PageProps) {
           </div>
         )}
       </section>
+
+      {isCreatingUser && (
+        <div className="modal-backdrop" onClick={() => setIsCreatingUser(false)}>
+          <section
+            className="modal-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="new-user-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="modal-header">
+              <div>
+                <h2 id="new-user-title">Novo usuário</h2>
+                <p>Crie contas para portaria ou administração.</p>
+              </div>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label="Fechar"
+                onClick={() => setIsCreatingUser(false)}
+              >
+                <X size={18} />
+              </button>
+            </header>
+            <div className="modal-body">
+              <Form action={{ url: '/usuarios', method: 'post' }}>
+                {({ processing }) => (
+                  <>
+                    <UserFields requirePassword />
+                    <div className="modal-actions">
+                      <button type="submit" disabled={processing}>
+                        <Plus size={18} />
+                        Criar usuário
+                      </button>
+                      <button
+                        type="button"
+                        className="secondary"
+                        onClick={() => setIsCreatingUser(false)}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  </>
+                )}
+              </Form>
+            </div>
+          </section>
+        </div>
+      )}
 
       {editingUser && (
         <div className="modal-backdrop" onClick={() => setEditingUser(null)}>
