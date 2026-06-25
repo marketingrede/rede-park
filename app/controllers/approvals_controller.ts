@@ -6,7 +6,7 @@ import { normalizeSearchText } from '#services/normalization_service'
 import { auditLog } from '#services/audit_service'
 
 export default class ApprovalsController {
-  async index({ inertia, response }: HttpContext) {
+  async index({ inertia }: HttpContext) {
     try {
       const pending = await ApprovalRequest.query()
         .where('status', 'pending')
